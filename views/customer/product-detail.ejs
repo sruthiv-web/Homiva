@@ -1,0 +1,406 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title><%= product.name %> | Homiva</title>
+    <link rel="stylesheet" href="/css/home.css">
+    <link rel="stylesheet" href="/css/products.css">
+    <link rel="stylesheet" href="/css/product-detail.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@400;500;600&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    
+<%- include("../partials/header", { user: user }) %>
+    <main class="detail-container">
+        <p class="breadcrumb">
+            <a href="/">Home</a> /
+            <a href="/products">Shop All</a> /
+            <%= product.name %>
+        </p>
+
+        <section class="product-detail">
+           
+<%
+    const productImages = product.images && product.images.length
+        ? product.images
+        : (product.image ? [product.image] : []);
+%>
+
+<div class="detail-image">
+    <div class="carousel-main">
+        <button
+            type="button"
+            class="carousel-arrow prev-arrow"
+            id="prevImage"
+            aria-label="Previous image"
+        >&#10094;</button>
+
+        <img
+            id="mainProductImage"
+            src="<%= productImages[0] || '' %>"
+            alt="<%= product.name %>"
+        >
+
+        <button
+            type="button"
+            class="carousel-arrow next-arrow"
+            id="nextImage"
+            aria-label="Next image"
+        >&#10095;</button>
+    </div>
+
+    <div class="carousel-thumbnails" id="carouselThumbnails">
+        <% productImages.forEach((image, index) => { %>
+            <button
+                type="button"
+                class="carousel-thumbnail <%= index === 0 ? 'active' : '' %>"
+                data-index="<%= index %>"
+                aria-label="View image <%= index + 1 %>"
+            >
+                <img src="<%= image %>" alt="<%= product.name %> view <%= index + 1 %>">
+            </button>
+        <% }) %>
+    </div>
+
+    <p class="zoom-hint">Hover over image to zoom</p>
+</div>
+
+            <div class="detail-info">
+                <p class="detail-category"><%= product.category %></p>
+
+                <h1><%= product.name %></h1>
+
+                <p class="detail-price">
+                    ₹<%= Number(product.price).toLocaleString("en-IN") %>
+                </p>
+
+                <p class="detail-description">
+                    <%= product.description %>
+                </p>
+
+                <p class="stock-status">
+                    <% if (product.stock > 0) { %>
+                        <span class="in-stock">In stock</span>
+                    
+                    <% } else { %>
+                        <span class="out-of-stock">Out of stock</span>
+                    <% } %>
+                </p>
+
+                
+<div class="quantity-selector">
+    <label for="quantity">Quantity</label>
+
+    <div class="quantity-controls">
+        <button type="button" id="decreaseQty" aria-label="Decrease quantity">−</button>
+
+        <input
+            type="number"
+            id="quantity"
+            value="1"
+            min="1"
+            max="<%= product.stock %>"
+            readonly
+        >
+
+        <button type="button" id="increaseQty" aria-label="Increase quantity">+</button>
+    </div>
+</div>
+
+<div class="purchase-actions">
+
+    <button
+        type="button"
+        id="detailAddToCart"
+        class="detail-cart-btn"
+        data-product-id="<%= product._id %>"
+        <%= product.stock <= 0 ? "disabled" : "" %>
+    >
+        <%= product.stock > 0 ? "Add to Cart" : "Out of Stock" %>
+    </button>
+
+    <button
+        type="button"
+        id="detailBuyNow"
+        class="detail-buy-btn"
+        data-product-id="<%= product._id %>"
+        <%= product.stock <= 0 ? "disabled" : "" %>
+    >
+        Buy Now
+    </button>
+
+</div>
+
+
+                <p id="detailMessage" role="status"></p>
+                
+<div class="purchase-benefits">
+    <div class="benefit-item">
+        <span class="benefit-icon">♧</span>
+        <div>
+            <h4>Climate-Neutral Delivery</h4>
+            <p>Free insured courier on orders over ₹12,000. Estimated arrival in 3–5 business days.</p>
+        </div>
+    </div>
+
+    <div class="benefit-item">
+        <span class="benefit-icon">♧</span>
+        <div>
+            <h4>Zero-Plastic Packaging</h4>
+            <p>Protected with moulded paper pulp and recycled unbleached kraft cushioning.</p>
+        </div>
+    </div>
+
+    <div class="benefit-item">
+        <span class="benefit-icon">♻</span>
+        <div>
+            <h4>30-Day Thoughtful Return Window</h4>
+            <p>Complimentary pickup if the product does not meet expectations.</p>
+        </div>
+    </div>
+</div>
+
+            </div>
+        </section>
+
+        <section class="similar-section">
+            <p class="eyebrow">YOU MAY ALSO LIKE</p>
+            <h2>Similar Products</h2>
+
+            <% if (similarProducts.length === 0) { %>
+                <p>No similar products available yet.</p>
+            <% } else { %>
+                <div class="similar-grid">
+                    <% similarProducts.forEach(item => { %>
+                        <a
+                            href="/products/<%= item._id %>"
+                            class="similar-card"
+                        >
+                            <img
+                                src="<%= item.image %>"
+                                alt="<%= item.name %>"
+                                loading="lazy"
+                            >
+
+                            <h3><%= item.name %></h3>
+
+                            <p>
+                                ₹<%= Number(item.price).toLocaleString("en-IN") %>
+                            </p>
+                        </a>
+                    <% }) %>
+                </div>
+            <% } %>
+        </section>
+    </main>
+
+    <script>
+        const mainImage = document.getElementById("mainProductImage");
+
+const thumbnailButtons = document.querySelectorAll(".carousel-thumbnail");
+const prevImageBtn = document.getElementById("prevImage");
+const nextImageBtn = document.getElementById("nextImage");
+
+const carouselImages = Array.from(thumbnailButtons).map(button => {
+    return button.querySelector("img").src;
+});
+
+let currentImageIndex = 0;
+
+function showCarouselImage(index) {
+    if (carouselImages.length === 0) return;
+
+    currentImageIndex =
+        (index + carouselImages.length) % carouselImages.length;
+
+    mainImage.src = carouselImages[currentImageIndex];
+
+    thumbnailButtons.forEach((button, buttonIndex) => {
+        button.classList.toggle(
+            "active",
+            buttonIndex === currentImageIndex
+        );
+    });
+
+    mainImage.style.transform = "scale(1)";
+    mainImage.style.transformOrigin = "center";
+}
+
+thumbnailButtons.forEach((button, index) => {
+    button.addEventListener("click", () => {
+        showCarouselImage(index);
+    });
+});
+
+prevImageBtn.addEventListener("click", () => {
+    showCarouselImage(currentImageIndex - 1);
+});
+
+nextImageBtn.addEventListener("click", () => {
+    showCarouselImage(currentImageIndex + 1);
+});
+
+        mainImage.addEventListener("mousemove", event => {
+            const rect = mainImage.getBoundingClientRect();
+
+            const x = ((event.clientX - rect.left) / rect.width) * 100;
+            const y = ((event.clientY - rect.top) / rect.height) * 100;
+
+            mainImage.style.transformOrigin = `${x}% ${y}%`;
+            mainImage.style.transform = "scale(1.7)";
+        });
+
+        mainImage.addEventListener("mouseleave", () => {
+            mainImage.style.transform = "scale(1)";
+            mainImage.style.transformOrigin = "center";
+        });
+
+       
+const addToCartButton = document.getElementById("detailAddToCart");
+const detailMessage = document.getElementById("detailMessage");
+
+addToCartButton.addEventListener("click", async () => {
+    const productId = addToCartButton.dataset.productId;
+    const quantity = Number(document.getElementById("quantity").value);
+
+    try {
+        addToCartButton.disabled = true;
+        detailMessage.textContent = "Adding product to cart...";
+
+        const response = await fetch("/api/cart/add", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            credentials: "same-origin",
+            body: JSON.stringify({
+                productId,
+                quantity
+            })
+        });
+
+        if (response.status === 401) {
+            window.location.href =
+                "/login?message=" +
+                encodeURIComponent("Please login to add products to your cart.");
+            return;
+        }
+
+        if (response.status === 403) {
+            const result = await response.json();
+
+            if (result.blocked) {
+                window.location.href = "/account-suspended";
+                return;
+            }
+
+            detailMessage.textContent =
+                result.message || "You are not allowed to perform this action.";
+            return;
+        }
+
+        const result = await response.json();
+
+        if (!response.ok || !result.success) {
+            detailMessage.textContent =
+                result.message || "Unable to add product to cart.";
+            return;
+        }
+
+        detailMessage.textContent = result.alreadyInCart
+            ? "This product is already in your cart."
+            : "Product added to cart successfully!";
+
+    const cartCountElement = document.getElementById("cartCount");
+
+if (cartCountElement) {
+    const cartResponse = await fetch("/api/cart", {
+        credentials: "same-origin"
+    });
+
+    if (cartResponse.ok) {
+        const cartResult = await cartResponse.json();
+
+        const items = cartResult.data?.items || [];
+
+        const totalQuantity = items.reduce(
+            (total, item) => total + Number(item.quantity || 0),
+            0
+        );
+
+        cartCountElement.textContent = totalQuantity;
+    }
+}
+    } 
+    
+    catch (error) {
+        console.error("Product detail cart error:", error);
+        detailMessage.textContent =
+            "Unable to connect to cart. Please try again.";
+    } finally {
+        addToCartButton.disabled = false;
+    }
+});
+
+
+            const quantityInput = document.getElementById("quantity");
+const decreaseBtn = document.getElementById("decreaseQty");
+const increaseBtn = document.getElementById("increaseQty");
+
+const maxStock = Number(quantityInput.max);
+
+decreaseBtn.addEventListener("click", () => {
+    let quantity = Number(quantityInput.value);
+
+    if (quantity > 1) {
+        quantityInput.value = quantity - 1;
+    }
+});
+
+increaseBtn.addEventListener("click", () => {
+    let quantity = Number(quantityInput.value);
+
+    if (quantity < maxStock) {
+        quantityInput.value = quantity + 1;
+    }
+});
+
+const buyNowButton = document.getElementById("detailBuyNow");
+
+buyNowButton.addEventListener("click", () => {
+    const productId = buyNowButton.dataset.productId;
+    const quantity = Number(
+        document.getElementById("quantity").value
+    );
+
+    if (!productId || quantity < 1) {
+        detailMessage.textContent = "Please select a valid quantity.";
+        return;
+    }
+
+    const purchaseData = {
+        productId,
+        quantity
+    };
+
+    sessionStorage.setItem(
+        "buyNowProduct",
+        JSON.stringify(purchaseData)
+    );
+
+    window.location.href = "/checkout?mode=buyNow";
+});
+
+
+    </script>
+    
+<%- include("../partials/footer") %>
+
+</body>
+</html>

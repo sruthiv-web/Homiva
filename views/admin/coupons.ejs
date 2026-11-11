@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Homiva | Coupon Management</title>
+
+    <link rel="stylesheet" href="/css/admin-dashboard.css">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link
+        href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap"
+        rel="stylesheet">
+</head>
+
+<body>
+    <div class="admin-layout">
+
+        <aside class="sidebar">
+            <a href="/admin/dashboard" class="brand">
+                <span class="brand-icon">⌂</span>
+                <span class="brand-name">Homiva</span>
+                <small>HOME DECOR</small>
+            </a>
+
+            <nav class="sidebar-nav">
+                <a href="/admin/dashboard" class="nav-link">⌂ <span>Dashboard</span></a>
+                <a href="/admin/products" class="nav-link">◇ <span>Products</span></a>
+                <a href="/admin/orders" class="nav-link">🛒 <span>Orders</span></a>
+                <a href="/admin/users-page" class="nav-link">♙ <span>Users</span></a>
+                <a href="/admin/coupons" class="nav-link active">▦ <span>Coupons</span></a>
+            </nav>
+
+            <form action="/admin/logout" method="POST" class="logout-form">
+                <button type="submit" class="logout-link">
+                    ↪ <span>Logout</span>
+                </button>
+            </form>
+        </aside>
+
+        <main class="main-content">
+
+            <header class="topbar">
+                <button class="menu-toggle" id="menuToggle" aria-label="Toggle menu">☰</button>
+
+                <div class="search-box">
+                    <span>⌕</span>
+                    <input type="search" placeholder="Search coupons..." aria-label="Search coupons">
+                </div>
+
+                <div class="admin-profile">
+                    <span class="avatar">A</span>
+                    <span>Admin</span>
+                </div>
+            </header>
+
+            <section class="dashboard-content">
+
+                <div class="welcome-row">
+                    <div>
+                        <h1>Coupon Management</h1>
+                        <p>Create and manage discount coupons for your store.</p>
+                    </div>
+
+                    <button class="homiva-btn" id="addCouponBtn">
+                        + Add New Coupon
+                    </button>
+                </div>
+                <!-- Add Coupon Modal -->
+                <div class="order-modal" id="couponModal">
+                    <div class="order-modal-content">
+
+                        <div class="order-modal-header">
+                            <h2 id="couponModalTitle">Add New Coupon</h2>
+                            <button type="button" id="closeCouponModal">×</button>
+                        </div>
+
+                        <form id="couponForm">
+
+                            <label for="couponCode">Coupon Code</label>
+                            <input type="text" id="couponCode" required placeholder="Example: SAVE10">
+
+                            <label for="discountType">Discount Type</label>
+                            <select id="discountType" required>
+                                <option value="FLAT">Flat Amount</option>
+                                <option value="PERCENTAGE">Percentage</option>
+                            </select>
+
+                            <label for="discountValue">Discount Value</label>
+                            <input type="number" id="discountValue" min="1" required>
+
+                            <div id="maxDiscountGroup">
+                                <label for="maxDiscountAmount">Maximum Discount Amount (₹)</label>
+                                <input type="number" id="maxDiscountAmount" min="1" placeholder="Example: 500">
+                            </div>
+
+                            <label for="minPurchase">Minimum Purchase (₹)</label>
+                            <input type="number" id="minPurchase" min="0" value="0" required>
+
+                            <label for="expiryDate">Expiry Date</label>
+                            <input type="date" id="expiryDate" required>
+
+                            <label for="usageLimit">Maximum Usage Count</label>
+                            <input type="number" id="usageLimit" min="1" required>
+
+                            <button type="submit" class="homiva-btn">
+                                Save Coupon
+                            </button>
+
+                        </form>
+                    </div>
+                </div>
+                <section class="panel">
+                    <div class="panel-heading">
+                        <h2>All Coupons</h2>
+                    </div>
+
+                    <div class="table-wrapper">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Coupon Code</th>
+                                    <th>Discount Type</th>
+                                    <th>Discount</th>
+                                    <th>Min Purchase</th>
+                                    <th>Expiry Date</th>
+                                    <th>Usage</th>
+                                    <th>Status</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+
+                            <tbody id="couponsContainer">
+                                <tr>
+                                    <td colspan="8" style="text-align:center;">
+                                        Loading coupons...
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+            </section>
+        </main>
+    </div>
+
+    <script>
+        // Sidebar toggle
+        document.getElementById("menuToggle").addEventListener("click", () => {
+            document.querySelector(".sidebar").classList.toggle("sidebar-open");
+        });
+
+        // Coupon modal
+        const couponModal = document.getElementById("couponModal");
+        const addCouponBtn = document.getElementById("addCouponBtn");
+        const closeCouponModal = document.getElementById("closeCouponModal");
+
+        addCouponBtn.addEventListener("click", () => {
+            couponModal.style.display = "flex";
+        });
+
+        closeCouponModal.addEventListener("click", () => {
+            couponModal.style.display = "none";
+        });
+
+        couponModal.addEventListener("click", (event) => {
+            if (event.target === couponModal) {
+                couponModal.style.display = "none";
+            }
+        });
+
+        // Discount type toggle
+        const discountType = document.getElementById("discountType");
+        const maxDiscountGroup = document.getElementById("maxDiscountGroup");
+        const maxDiscountAmount = document.getElementById("maxDiscountAmount");
+
+        function toggleMaxDiscountField() {
+            if (discountType.value === "PERCENTAGE") {
+                maxDiscountGroup.style.display = "block";
+                maxDiscountAmount.required = true;
+            } else {
+                maxDiscountGroup.style.display = "none";
+                maxDiscountAmount.required = false;
+                maxDiscountAmount.value = "";
+            }
+        }
+
+        discountType.addEventListener("change", toggleMaxDiscountField);
+
+        toggleMaxDiscountField();
+        let couponsData = [];
+        let editingCouponId = null;
+        // Load all coupons
+        async function loadCoupons() {
+            try {
+                const response = await fetch("/admin/coupons/list");
+                const result = await response.json();
+
+                const couponsContainer = document.getElementById("couponsContainer");
+                couponsContainer.innerHTML = "";
+
+                if (!result.success || result.data.length === 0) {
+                    couponsContainer.innerHTML = `
+                <tr>
+                    <td colspan="8">No coupons found.</td>
+                </tr>
+            `;
+                    return;
+                }
+                couponsData = result.data;
+                result.data.forEach(coupon => {
+                    const row = document.createElement("tr");
+
+                    const discount = coupon.discountType === "FLAT"
+                        ? `₹${coupon.discountValue}`
+                        : `${coupon.discountValue}% (Up to ₹${coupon.maxDiscountAmount})`;
+
+                    const status = coupon.isActive ? "Active" : "Inactive";
+                    const actionButton = coupon.isActive
+                        ? "Deactivate"
+                        : "Activate";
+                    row.innerHTML = `
+                <td>${coupon.code}</td>
+                <td>${coupon.discountType}</td>
+                <td>${discount}</td>
+                <td>₹${coupon.minPurchase}</td>
+                <td>${new Date(coupon.expiryDate).toLocaleDateString()}</td>
+                <td>${coupon.usedCount} / ${coupon.usageLimit}</td>
+               <td>${status}</td>
+<td>
+    <div class="coupon-actions">
+        <button
+            class="coupon-action-btn edit-btn"
+            data-id="${coupon._id}"
+            type="button">
+            Edit
+        </button>
+
+        <button
+            class="coupon-action-btn toggle-btn ${coupon.isActive ? "deactivate-btn" : "activate-btn"}"
+            data-id="${coupon._id}"
+            type="button">
+            ${actionButton}
+        </button>
+    </div>
+</td>
+            `;
+
+                    couponsContainer.appendChild(row);
+                });
+
+            } catch (error) {
+                console.error("Load coupons error:", error);
+            }
+        }
+        // Handle edit coupon button
+        document.getElementById("couponsContainer").addEventListener("click", (event) => {
+            const editButton = event.target.closest(".edit-btn");
+
+            if (!editButton) return;
+
+            const couponId = editButton.dataset.id;
+
+            const coupon = couponsData.find(item => item._id === couponId);
+
+            if (!coupon) return;
+
+            editingCouponId = coupon._id;
+
+            document.getElementById("couponModalTitle").textContent = "Edit Coupon";
+
+            document.getElementById("couponCode").value = coupon.code;
+            document.getElementById("couponCode").disabled = true;
+
+            document.getElementById("discountType").value = coupon.discountType;
+            document.getElementById("discountValue").value = coupon.discountValue;
+
+            document.getElementById("maxDiscountAmount").value =
+                coupon.maxDiscountAmount || "";
+
+            document.getElementById("minPurchase").value = coupon.minPurchase;
+
+            const expiryDate = new Date(coupon.expiryDate);
+            document.getElementById("expiryDate").value =
+                `${expiryDate.getFullYear()}-${String(expiryDate.getMonth() + 1).padStart(2, "0")}-${String(expiryDate.getDate()).padStart(2, "0")}`;
+
+            document.getElementById("usageLimit").value = coupon.usageLimit;
+
+            toggleMaxDiscountField();
+
+            couponModal.style.display = "flex";
+        });
+
+        loadCoupons();
+        // Create new coupon
+        const couponForm = document.getElementById("couponForm");
+        couponForm.addEventListener("submit", async (event) => {
+            event.preventDefault();
+
+            const couponData = {
+                code: document.getElementById("couponCode").value.trim(),
+                discountType: document.getElementById("discountType").value,
+                discountValue: document.getElementById("discountValue").value,
+                maxDiscountAmount: document.getElementById("maxDiscountAmount").value,
+                minPurchase: document.getElementById("minPurchase").value,
+                expiryDate: document.getElementById("expiryDate").value,
+                usageLimit: document.getElementById("usageLimit").value
+            };
+
+            const isEditing = Boolean(editingCouponId);
+
+            const url = isEditing
+                ? `/admin/coupons/${editingCouponId}`
+                : "/admin/coupons";
+
+            const method = isEditing ? "PUT" : "POST";
+
+            try {
+                const response = await fetch(url, {
+                    method,
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(couponData)
+                });
+
+                const result = await response.json();
+
+                if (!response.ok) {
+                    alert(result.message);
+                    return;
+                }
+
+                alert(result.message);
+
+                couponForm.reset();
+                couponModal.style.display = "none";
+
+                editingCouponId = null;
+                document.getElementById("couponCode").disabled = false;
+                document.getElementById("couponModalTitle").textContent = "Add New Coupon";
+
+                toggleMaxDiscountField();
+                loadCoupons();
+
+            } catch (error) {
+                console.error("Coupon save error:", error);
+                alert("Something went wrong.");
+            }
+        });
+        // Handle activate/deactivate coupon
+document.getElementById("couponsContainer").addEventListener("click", async (event) => {
+
+    const toggleButton = event.target.closest(".toggle-btn");
+
+    if (!toggleButton) return;
+
+    const couponId = toggleButton.dataset.id;
+
+    const action = toggleButton.textContent.trim();
+
+    const confirmAction = confirm(
+        `Are you sure you want to ${action.toLowerCase()} this coupon?`
+    );
+
+    if (!confirmAction) return;
+
+    try {
+        const response = await fetch(`/admin/coupons/${couponId}/toggle`, {
+            method: "PATCH"
+        });
+
+        const result = await response.json();
+
+        if (!response.ok) {
+            alert(result.message);
+            return;
+        }
+
+        alert(result.message);
+
+        loadCoupons();
+
+    } catch (error) {
+        console.error("Toggle coupon error:", error);
+        alert("Something went wrong.");
+    }
+});
+    </script>
+
+</body>
+
+</html>

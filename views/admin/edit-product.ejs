@@ -1,0 +1,276 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Product | Homiva</title>
+
+    <link rel="stylesheet" href="/css/admin-dashboard.css">
+    <link rel="stylesheet" href="/css/admin-products.css">
+
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<div class="admin-layout">
+
+    <aside class="sidebar">
+        <a href="/admin/dashboard" class="brand">
+            <span class="brand-icon">⌂</span>
+            <span class="brand-name">Homiva</span>
+            <small>HOME DECOR</small>
+        </a>
+
+         <nav class="sidebar-nav">
+                <a href="/admin/dashboard" class="nav-link">⌂ <span>Dashboard</span></a>
+                <a href="/admin/products" class="nav-link active">◇ <span>Products</span></a>
+                <a href="/admin/orders" class="nav-link">🛒 <span>Orders</span></a>
+                <a href="/admin/users-page" class="nav-link">♙ <span>Users</span></a>
+                <a href="/admin/coupons" class="nav-link">▦ <span>Coupons</span></a>
+            </nav>
+
+        <form action="/admin/logout" method="POST" class="logout-form">
+            <button type="submit" class="logout-link">
+                ↪ <span>Logout</span>
+            </button>
+        </form>
+    </aside>
+
+    <main class="main-content">
+
+        <header class="topbar">
+            <button class="menu-toggle" id="menuToggle" aria-label="Toggle menu">☰</button>
+
+            <div class="admin-profile">
+                <span class="avatar">A</span>
+                <span>Admin</span>
+            </div>
+        </header>
+
+        <section class="products-content">
+
+            <div class="products-heading">
+                <div>
+                    <h1>Edit Product</h1>
+                    <p>Update your home decor product details</p>
+                </div>
+
+                <a href="/admin/products" class="add-product-btn">
+                    ← Back to Products
+                </a>
+            </div>
+
+            <div class="products-container">
+
+                <div class="form-heading">
+                    <span class="form-icon">◇</span>
+                    <div>
+                        <h2>Product Details</h2>
+                        <p>Update the information below.</p>
+                    </div>
+                </div>
+
+                <form
+                    action="/admin/products/<%= product._id %>/edit"
+                    method="POST"
+                    enctype="multipart/form-data"
+                >
+
+                    <label for="name">Product Name</label>
+                    <input
+                        type="text"
+                        id="name"
+                        name="name"
+                        value="<%= product.name %>"
+                        required
+                    >
+
+                    <label for="description">Description</label>
+                    <textarea
+                        id="description"
+                        name="description"
+                        rows="4"
+                    ><%= product.description || "" %></textarea>
+
+                    <div class="form-row">
+                        <div>
+                            <label for="price">Price (₹)</label>
+                            <input
+                                type="number"
+                                id="price"
+                                name="price"
+                                min="0"
+                                step="0.01"
+                                value="<%= product.price %>"
+                                required
+                            >
+                        </div>
+
+                        <div>
+                            <label for="stock">Stock</label>
+                            <input
+                                type="number"
+                                id="stock"
+                                name="stock"
+                                min="0"
+                                step="1"
+                                value="<%= product.stock %>"
+                                required
+                            >
+                        </div>
+                    </div>
+
+                    <label for="category">Category</label>
+                    <input
+                        type="text"
+                        id="category"
+                        name="category"
+                        value="<%= product.category %>"
+                        required
+                    >
+
+                    
+<%
+    const existingImages = product.images && product.images.length
+        ? product.images
+        : (product.image ? [product.image] : []);
+%>
+
+<label>Current Product Images</label>
+
+<div class="existing-images">
+    <% existingImages.forEach((image, index) => { %>
+        <div class="existing-image-item">
+            <img
+                src="<%= image %>"
+                alt="<%= product.name %> image <%= index + 1 %>"
+            >
+
+            <button
+                type="button"
+                class="remove-image-btn"
+                data-image-index="<%= index %>"
+                aria-label="Remove image <%= index + 1 %>"
+                title="Remove image"
+            >&times;</button>
+        </div>
+    <% }) %>
+</div>
+
+<input
+    type="hidden"
+    name="remainingImages"
+    id="remainingImages"
+    value="<%= JSON.stringify(existingImages) %>"
+>
+
+
+                    
+<label for="images">Add More Product Images (Optional)</label>
+<input
+    type="file"
+    id="images"
+    name="images"
+    accept="image/*"
+    multiple
+>
+<p class="form-help">
+    Select multiple images. Existing images will remain unless removed.
+</p>
+
+<div class="featured-option">
+    <label for="isFeatured">
+        <input
+            type="checkbox"
+            id="isFeatured"
+            name="isFeatured"
+            value="true"
+            <%= product.isFeatured ? "checked" : "" %>
+        >
+        Show on Homepage
+    </label>
+    <p class="form-help">
+        Display this product in the featured products section on the homepage.
+    </p>
+</div>
+
+
+                    <button type="submit" class="submit-product">
+                        Save Changes
+                    </button>
+
+                </form>
+            </div>
+
+        </section>
+    </main>
+</div>
+
+<script>
+    document.getElementById("menuToggle").addEventListener("click", () => {
+        document.querySelector(".sidebar").classList.toggle("sidebar-open");
+    });
+    //closing of image
+    const imageContainer = document.querySelector(".existing-images");
+    const remainingImagesInput = document.getElementById("remainingImages");
+    const editForm = document.querySelector(
+        'form[enctype="multipart/form-data"]'
+    );
+
+    if (imageContainer && remainingImagesInput && editForm) {
+        imageContainer.addEventListener("click", event => {
+            const removeButton = event.target.closest(".remove-image-btn");
+
+            if (!removeButton) return;
+
+            const imageItem = removeButton.closest(".existing-image-item");
+            if (!imageItem) return;
+
+            const image = imageItem.querySelector("img").getAttribute("src");
+
+            let remainingImages;
+
+            try {
+                remainingImages = JSON.parse(remainingImagesInput.value);
+            } catch {
+                alert("Unable to update image selection. Please refresh the page.");
+                return;
+            }
+
+            remainingImages = remainingImages.filter(url => url !== image);
+
+            if (remainingImages.length === 0) {
+                alert("Keep at least one image, or select a new image before saving.");
+            }
+
+            remainingImagesInput.value = JSON.stringify(remainingImages);
+            imageItem.remove();
+        });
+
+        editForm.addEventListener("submit", event => {
+            let remainingImages;
+
+            try {
+                remainingImages = JSON.parse(remainingImagesInput.value);
+            } catch {
+                event.preventDefault();
+                alert("Invalid image selection. Please refresh the page.");
+                return;
+            }
+
+            const newImages = document.getElementById("images");
+
+            if (
+                remainingImages.length === 0 &&
+                (!newImages || newImages.files.length === 0)
+            ) {
+                event.preventDefault();
+                alert("Please keep or upload at least one product image.");
+            }
+        });
+    }
+</script>
+
+</body>
+</html>

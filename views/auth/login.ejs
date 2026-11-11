@@ -1,0 +1,135 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sign In | HOMIVA</title>
+  <link rel="stylesheet" href="/css/login.css">
+</head>
+<body>
+
+  <!-- Same brand header as signup page -->
+  <header class="topbar">
+    <a href="/" class="brand">
+      <span>HOMIVA</span>
+      <small>NORDIC TRANQUILITY · KYOTO SOUL</small>
+    </a>
+  </header>
+
+  <main class="login-layout">
+
+    <!-- Left image panel -->
+    <section class="login-visual">
+      <div class="visual-top">
+        <span>✳ ATELIER PORTAL</span>
+        <span>EST. 2025</span>
+      </div>
+
+      <div class="visual-quote">
+        <span class="quote-line"></span>
+        <blockquote>
+          “Sanctuary is not merely a physical space, but the calm mindful cadence cultivated within it.”
+        </blockquote>
+        <p>HOMIVA LIVING · HOME & DECOR</p>
+      </div>
+    </section>
+
+    <!-- Right login form -->
+    <section class="login-form-side">
+      <div class="login-card">
+
+        <div class="login-eyebrow">✳ NORDIC SANCTUARY · KYOTO SOUL</div>
+
+        <h1>Welcome Back</h1>
+
+        <p class="login-subtitle">
+          Sign in to access your curated sanctuary, order provenance,
+          and atelier wishlist.
+        </p>
+<p id="login-message" class="login-message" hidden></p>
+        <form id="loginForm" autocomplete="off">
+
+          <div class="field-heading">
+           <label for="email">EMAIL</label>
+            <span>required</span>
+          </div>
+
+          <div class="input-wrap">
+            <input
+              type="email"
+              id="email"
+              name="email"
+              placeholder="e.g. name@example.com"
+              autocomplete="off"
+               value=""
+              required
+            >
+            <span class="input-icon">@</span>
+          </div>
+
+          <div class="password-heading">
+            <label for="password">PASSWORD</label>
+            <a href="/forgot-password">Forgot password?</a>
+          </div>
+
+          <div class="input-wrap password-wrap">
+            <input
+              type="password"
+              id="password"
+              name="password"
+              placeholder="Enter your password"
+              autocomplete="off"
+              value=""
+              required
+            >
+            <button
+              type="button"
+              class="toggle-password"
+              id="togglePassword"
+              aria-label="Show password"
+            >◉</button>
+          </div>
+
+          <label class="remember-option">
+            <input type="checkbox" id="rememberMe" name="rememberMe">
+            <span>Keep me signed in on this trusted device</span>
+          </label>
+
+          <button type="submit" id="loginButton" class="signin-button">
+            SIGN IN <span>→</span>
+          </button>
+
+          <p id="loginMessage" role="status" aria-live="polite"></p>
+
+          <div class="create-account">
+            New to Homiva?
+            <a href="/signup">Create Account</a>
+          </div>
+
+          <p class="security-note">
+            ♙ 256-BIT ENCRYPTED STUDIO SECURITY · GUARANTEED PRIVACY
+          </p>
+
+        </form>
+      </div>
+    </section>
+
+  </main>
+
+
+  <footer class="site-footer">
+    <p>✳ &nbsp; Artisanal Guarantee · Handcrafted in Kyoto & Copenhagen</p>
+
+    <div class="footer-links">
+      <a href="/privacy">PRIVACY</a>
+      <a href="/terms">TERMS</a>
+      <a href="/contact">CONTACT</a>
+    </div>
+
+    <p>© 2025 HOMIVA LIVING. ALL RIGHTS RESERVED.</p>
+  </footer>
+
+  <script src="/js/login.js"></script>
+</body>
+</html>

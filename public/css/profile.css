@@ -1,0 +1,659 @@
+/* PROFILE PAGE */
+
+.profile-page {
+    max-width: 1200px;
+    margin: 60px auto;
+    padding: 0 5%;
+}
+
+.profile-heading {
+    margin-bottom: 35px;
+}
+
+.profile-subtitle {
+    color: var(--olive);
+    font-size: 11px;
+    letter-spacing: 2px;
+    font-weight: 600;
+}
+
+.profile-heading h1 {
+    font-family: "Playfair Display", serif;
+    font-size: 38px;
+    color: var(--brown);
+    margin: 10px 0;
+}
+
+.profile-heading > p:last-child {
+    color: var(--muted);
+    font-size: 14px;
+}
+
+.profile-layout {
+    display: grid;
+    grid-template-columns: 260px 1fr;
+    gap: 30px;
+    align-items: start;
+}
+
+/* SIDEBAR */
+
+.profile-sidebar {
+    background: var(--white);
+    border: 1px solid var(--border);
+    padding: 25px 20px;
+}
+
+.profile-user {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding-bottom: 22px;
+    border-bottom: 1px solid var(--border);
+}
+
+.profile-avatar {
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    background: var(--cream);
+    color: var(--olive);
+    display: grid;
+    place-items: center;
+    font-family: "Playfair Display", serif;
+    font-size: 22px;
+}
+
+.profile-user h3 {
+    font-size: 14px;
+    color: var(--brown);
+    margin-bottom: 4px;
+}
+
+.profile-user p {
+    font-size: 11px;
+    color: var(--muted);
+    word-break: break-word;
+}
+
+.profile-navigation {
+    display: flex;
+    flex-direction: column;
+    margin-top: 18px;
+    gap: 5px;
+}
+
+.profile-nav-item,
+.profile-logout {
+    width: 100%;
+    padding: 14px 10px;
+    border: none;
+    background: transparent;
+    text-align: left;
+    color: var(--brown);
+    font-family: inherit;
+    font-size: 13px;
+    text-decoration: none;
+    cursor: pointer;
+    transition: 0.2s ease;
+}
+
+.profile-nav-item span {
+    color: var(--muted);
+    margin-right: 12px;
+    font-size: 10px;
+}
+
+.profile-nav-item:hover,
+.profile-nav-item.active {
+    background: var(--cream);
+    color: var(--olive);
+}
+
+.profile-logout {
+    border-top: 1px solid var(--border);
+    margin-top: 12px;
+    color: var(--olive);
+}
+
+/* MAIN CONTENT */
+
+.profile-content {
+    background: var(--white);
+    border: 1px solid var(--border);
+    padding: 35px;
+    min-height: 350px;
+}
+
+.profile-section {
+    display: none;
+}
+
+.profile-section.active {
+    display: block;
+}
+
+.profile-section h2 {
+    font-family: "Playfair Display", serif;
+    font-size: 27px;
+    color: var(--brown);
+    margin: 10px 0 20px;
+}
+
+/* PERSONAL DETAILS HEADER */
+
+.personal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 22px;
+}
+
+.personal-header h2 {
+    margin: 10px 0 0;
+}
+
+/* EDIT PROFILE BUTTON */
+
+#editProfileBtn {
+    margin: 0;
+    padding: 12px 18px;
+    background: var(--olive);
+    color: var(--white);
+    border: 1px solid var(--olive);
+    font-family: inherit;
+    font-size: 13px;
+    cursor: pointer;
+    transition: 0.2s ease;
+}
+
+#editProfileBtn:hover {
+    background: var(--olive-dark);
+}
+
+/* PERSONAL DETAILS CARD */
+
+.personal-details-card {
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 20px;
+    background: var(--ivory);
+}
+
+.personal-detail-row {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 18px 0;
+    border-bottom: 1px solid var(--border);
+}
+
+.personal-detail-row:last-child {
+    border-bottom: none;
+}
+
+/* DETAIL ICON */
+
+.detail-icon {
+    width: 42px;
+    height: 42px;
+    min-width: 42px;
+    border-radius: 50%;
+    background: var(--cream);
+    color: var(--olive);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+}
+
+/* DETAIL INFORMATION */
+
+.detail-info {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.detail-info label {
+    color: var(--muted);
+    font-size: 12px;
+}
+
+.detail-info span {
+    color: var(--brown);
+    font-size: 14px;
+    font-weight: 500;
+}
+
+/* EDIT PROFILE FORM */
+
+.edit-profile-form {
+    max-width: 550px;
+    margin-top: 30px;
+}
+
+.edit-profile-form[hidden] {
+    display: none;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 9px;
+    margin-bottom: 22px;
+}
+
+.form-group label {
+    color: var(--brown);
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.form-group input {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 14px 15px;
+    border: 1px solid var(--border);
+    background: var(--ivory);
+    color: var(--brown);
+    font-family: inherit;
+    font-size: 14px;
+    outline: none;
+}
+
+.form-group input:focus {
+    border-color: var(--olive);
+}
+
+.edit-form-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-top: 25px;
+}
+
+.edit-form-actions button {
+    padding: 13px 24px;
+    font-family: inherit;
+    font-size: 13px;
+    cursor: pointer;
+    border: 1px solid var(--olive);
+}
+
+.edit-form-actions button[type="submit"] {
+    background: var(--olive);
+    color: var(--white);
+}
+
+.edit-form-actions #cancelEditBtn {
+    background: transparent;
+    color: var(--brown);
+    border-color: var(--border);
+}
+
+/* RESPONSIVE */
+
+@media (max-width: 768px) {
+    .profile-page {
+        margin: 35px auto;
+    }
+
+    .profile-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .profile-content {
+        padding: 22px;
+    }
+
+    .profile-heading h1 {
+        font-size: 30px;
+    }
+}
+
+@media (max-width: 600px) {
+    .personal-header {
+        align-items: flex-start;
+        gap: 12px;
+    }
+
+    #editProfileBtn {
+        padding: 10px 12px;
+        white-space: nowrap;
+    }
+
+    .personal-details-card {
+        padding: 8px 14px;
+    }
+
+    .personal-detail-row {
+        gap: 12px;
+    }
+}
+/* SIDEBAR NAVIGATION ICONS */
+
+.profile-nav-item,
+.profile-logout {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.profile-nav-item i,
+.profile-logout i {
+    width: 16px;
+    font-size: 14px;
+    color: var(--muted);
+}
+
+.profile-nav-item:hover i,
+.profile-nav-item.active i,
+.profile-logout:hover i {
+    color: var(--olive);
+}
+
+/* MY ADDRESSES */
+
+.addresses-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
+}
+
+.addresses-header h2 {
+    margin: 10px 0 0;
+}
+
+#addAddressBtn {
+    padding: 12px 18px;
+    background: var(--olive);
+    color: var(--white);
+    border: 1px solid var(--olive);
+    font-family: inherit;
+    font-size: 13px;
+    cursor: pointer;
+    transition: 0.2s ease;
+}
+
+#addAddressBtn:hover {
+    background: var(--olive-dark);
+}
+
+/* ADDRESS FORM */
+
+#addressForm {
+    max-width: 550px;
+    margin-top: 25px;
+    padding: 22px;
+    border: 1px solid var(--border);
+    background: var(--ivory);
+}
+
+#addressForm[hidden] {
+    display: none;
+}
+
+/* SAVED ADDRESS LIST */
+
+#addressList {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 18px;
+}
+
+@media (max-width: 600px) {
+    .addresses-header {
+        align-items: flex-start;
+        gap: 12px;
+    }
+
+    #addAddressBtn {
+        padding: 10px 12px;
+        white-space: nowrap;
+    }
+
+    #addressForm {
+        padding: 16px;
+    }
+}
+/* Address Action Buttons */
+.address-actions {
+    display: flex;
+    gap: 12px;
+    margin-top: 20px;
+}
+
+/* Common Button Style */
+.address-actions button {
+    padding: 10px 24px;
+    border-radius: 3px;
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+/* Edit Button */
+.edit-address-btn {
+    background-color: var(--olive);
+    color: var(--ivory);
+    border: 1px solid var(--olive);
+}
+
+.edit-address-btn:hover {
+    background-color: var(--olive-dark);
+}
+
+/* Delete Button */
+.delete-address-btn {
+    background-color: var(--olive);
+    color:white;
+    border: 1px solid var(--border);
+}
+
+.delete-address-btn:hover {
+    background-color: var(--olive-dark);
+    color: var(--ivory);
+}
+/* Address List */
+#addressList {
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+}
+
+/* Individual Address Card */
+.saved-address-card {
+    background: var(--ivory);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 25px 28px;
+    box-shadow: 0 3px 12px rgba(70, 65, 45, 0.05);
+    transition: box-shadow 0.3s ease, transform 0.3s ease;
+}
+
+.saved-address-card:hover {
+    box-shadow: 0 6px 18px rgba(70, 65, 45, 0.10);
+    transform: translateY(-2px);
+}
+
+/* Address Name */
+.saved-address-card h3 {
+    color: var(--brown);
+    font-size: 18px;
+    font-weight: 600;
+    margin: 0 0 12px;
+}
+
+/* Address Details */
+.saved-address-card p {
+    color: var(--text);
+    font-size: 15px;
+    line-height: 1.7;
+    margin: 3px 0;
+}
+
+/* Default Address */
+.saved-address-card span {
+    display: inline-block;
+    margin-top: 12px;
+    padding: 5px 12px;
+    background: #e9e8dc;
+    color: var(--olive);
+    border-radius: 3px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+/* Buttons */
+.address-actions {
+    display: flex;
+    gap: 12px;
+    margin-top: 20px;
+}
+
+/* Mobile Responsive */
+@media (max-width: 576px) {
+    .saved-address-card {
+        padding: 20px;
+    }
+
+    .saved-address-card h3 {
+        font-size: 17px;
+    }
+
+    .saved-address-card p {
+        font-size: 14px;
+    }
+}
+/* Wishlist Products */
+#wishlistProducts {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 18px;
+}
+
+/* Wishlist Card */
+.wishlist-card {
+    background: var(--ivory);
+    border: 1px solid var(--border);
+    padding: 12px;
+    border-radius: 5px;
+}
+
+/* Product Image */
+.wishlist-product-image {
+    width: 100%;
+    height: 140px;
+    object-fit: cover;
+    border-radius: 4px;
+}
+
+/* Product Name */
+.wishlist-card h3 {
+    font-size: 14px;
+    color: var(--brown);
+    margin: 10px 0 5px;
+}
+
+/* Product Price */
+.wishlist-card p {
+    font-size: 14px;
+    color: var(--olive);
+    margin: 5px 0 10px;
+}
+
+/* Remove Button */
+.wishlist-remove-btn {
+    padding: 7px 12px;
+    background: var(--olive);
+    color: var(--ivory);
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    cursor: pointer;
+    font-size: 12px;
+}
+
+.wishlist-remove-btn:hover {
+    background: var(--olive-dark);
+    color: var(--ivory);
+}
+
+@media (max-width: 768px) {
+    #wishlistProducts {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 480px) {
+    #wishlistProducts {
+        grid-template-columns: 1fr;
+    }
+}
+/* My Orders */
+
+#orders-container {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin-top: 28px;
+}
+
+.order-card {
+    padding: 20px 24px;
+    border: 1px solid #e8dfd3;
+    border-radius: 8px;
+    background: #ffffff;
+}
+
+.order-card h3 {
+    font-size: 17px;
+    font-weight: 600;
+    color: #493526;
+    margin: 0 0 12px;
+    overflow-wrap: anywhere;
+}
+
+.order-card p {
+    font-size: 15px;
+    color: #62564d;
+    margin: 8px 0;
+    line-height: 1.5;
+}
+
+.order-card p:last-child {
+    margin-bottom: 0;
+}
+.order-product-image {
+    width: 65px;
+    height: 65px;
+    object-fit: cover;
+    border-radius: 6px;
+}
+/* Cancel Order Button */
+
+.cancel-order-btn {
+    padding: 9px 18px;
+    background-color: #ffffff;
+    color: #a94442;
+    border: 1px solid #a94442;
+    border-radius: 5px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-top: 12px;
+}
+
+.cancel-order-btn:hover {
+    background-color: #a94442;
+    color: #ffffff;
+}
+
+.cancel-order-btn:active {
+    transform: scale(0.97);
+}

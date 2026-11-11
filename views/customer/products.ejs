@@ -1,0 +1,567 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shop All | Homiva</title>
+<link rel="stylesheet" href="/css/home.css">
+    <link rel="stylesheet" href="/css/products.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@400;500;600&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <%- include("../partials/header", { user: user }) %>
+
+    <section class="shop-hero">
+        <div>
+            <p class="eyebrow">THOUGHTFUL PIECES FOR EVERY SPACE</p>
+            <h1>Shop All Products</h1>
+            <p>Discover timeless home decor and living essentials<br>
+               that make everyday moments special.</p>
+        </div>
+    </section>
+
+    <main class="shop-container">
+
+        <!-- Product Category Navigation -->
+<section class="category-navigation">
+    <p class="eyebrow">SHOP BY CATEGORY</p>
+    
+<div class="category-list">
+    <button class="category-btn active" data-category="all">
+        All Products
+    </button>
+
+    <button class="category-btn" data-category="Decor & Objects">
+        Decor & Objects
+    </button>
+
+    <button class="category-btn" data-category="Lighting">
+        Lighting
+    </button>
+
+    <button class="category-btn" data-category="Wall Decor">
+        Wall Decor
+    </button>
+
+    <button class="category-btn" data-category="Soft Furnishings">
+        Soft Furnishings
+    </button>
+
+    <button class="category-btn" data-category="Plants & Planters">
+        Plants & Planters
+    </button>
+</div>
+</section>
+
+
+<!-- Price Range Filter -->
+<section class="price-filter">
+
+    <div class="price-values">
+        <span>Minimum: ₹<span id="minPriceValue">0</span></span>
+        <span>Maximum: ₹<span id="maxPriceValue">5000</span></span>
+    </div>
+
+    <div class="range-slider">
+        <input
+            type="range"
+            id="minPriceRange"
+            min="0"
+            max="5000"
+            step="100"
+            value="0"
+        >
+
+        <input
+            type="range"
+            id="maxPriceRange"
+            min="0"
+            max="5000"
+            step="100"
+            value="5000"
+        >
+    </div>
+
+    <div class="price-range-labels">
+        <span>₹0</span>
+        <span>₹5,000</span>
+    </div>
+
+</section>
+
+<!--filtering-->
+
+<section class="product-toolbar">
+    <label for="sortProducts">Sort by:</label>
+
+    <select id="sortProducts">
+        <option value="default">Featured</option>
+        <option value="price-low">Price: Low to High</option>
+        <option value="price-high">Price: High to Low</option>
+        <option value="name-az">Name: A–Z</option>
+    </select>
+
+    <label class="stock-filter" for="inStockOnly">
+        <input type="checkbox" id="inStockOnly">
+        In-stock only
+    </label>
+</section>
+
+
+        <div class="section-heading">
+            <div>
+                <p class="eyebrow">THE HOMIVA COLLECTION</p>
+                <h2>Find your favourites.</h2>
+            </div>
+            <p><%= products.length %> Products</p>
+        </div>
+
+        <% if (products.length === 0) { %>
+<p class="empty-message">
+    No products found. Try a different search.
+</p>        <% } else { %>
+
+            <div class="product-grid">
+                <% products.forEach(product => { %>
+
+                    <article class="product-card" data-stock="<%= product.stock %>">
+                        
+<div class="product-image">
+    <a href="/products/<%= product._id %>"
+       class="product-detail-link">
+        <img
+            src="<%= product.image %>"
+            alt="<%= product.name %>"
+            loading="lazy"
+        >
+    </a>
+
+
+                            <button
+                                type="button"
+                                class="wishlist-btn"
+                                data-product-id="<%= product._id %>"
+                                aria-label="Add <%= product.name %> to wishlist"
+                               aria-pressed="<%= wishlistIds && wishlistIds.includes(product._id.toString()) ? 'true' : 'false' %>"
+                                title="Add to wishlist"
+                            >♡</button>
+                        </div>
+
+                        <div class="product-info">
+                            <p class="product-category">
+                                <%= product.category %>
+                            </p>
+
+                            <h3>
+                            <a href="/products/<%= product._id %>"
+                             class="product-detail-link">
+                                  <%= product.name %>
+                               </a>
+                                </h3>
+
+                            <p class="product-description">
+                                <%= product.description %>
+                            </p>
+
+                            <p class="product-price">
+                                ₹<%= Number(product.price).toLocaleString("en-IN") %>
+                            </p>
+
+                            <button
+                                type="button"
+                                class="add-cart-btn"
+                                data-product-id="<%= product._id %>"
+                            >
+                                <span aria-hidden="true">🛒</span>
+                                Add to Cart
+                            </button>
+                        </div>
+                    </article>
+
+                <% }) %>
+            </div>
+
+        <% } %>
+
+        <p id="shopMessage" class="shop-message" role="status"></p>
+    </main>
+
+    <script>
+        const shopMessage = document.getElementById("shopMessage");
+        const cartCount = document.getElementById("cartCount");
+
+        async function updateCartCount() {
+    try {
+        const response = await fetch("/api/cart", {
+            credentials: "same-origin"
+        });
+
+        if (!response.ok) return;
+
+        const result = await response.json();
+
+        if (!result.success) return;
+
+        const items = result.data.items || [];
+
+        const totalQuantity = items.reduce(
+            (total, item) => total + Number(item.quantity || 0),
+            0
+        );
+
+        document.querySelectorAll("#cartCount").forEach(counter => {
+            counter.textContent = totalQuantity;
+        });
+
+    } catch (error) {
+        console.error("Cart count update error:", error);
+    }
+}
+
+updateCartCount();
+async function syncCartButtons() {
+    try {
+        const response = await fetch("/api/cart", {
+            credentials: "same-origin"
+        });
+
+        if (!response.ok) return;
+
+        const result = await response.json();
+
+        if (!result.success) return;
+
+        const items = result.data.items || [];
+
+        const cartProductIds = new Set(
+            items
+                .filter(item => item.product)
+                .map(item => String(item.product._id))
+        );
+
+        document.querySelectorAll(".add-cart-btn").forEach(button => {
+            const isInCart = cartProductIds.has(button.dataset.productId);
+
+            if (isInCart) {
+                button.classList.add("added");
+                button.innerHTML = "✓ Added to Cart";
+            } else {
+                button.classList.remove("added");
+                button.innerHTML = '<span aria-hidden="true">🛒</span> Add to Cart';
+            }
+        });
+
+    } catch (error) {
+        console.error("Cart button sync error:", error);
+    }
+}
+
+syncCartButtons();
+async function syncWishlistButtons() {
+    try {
+        const response = await fetch("/api/wishlist/items", {
+            credentials: "same-origin"
+        });
+
+        if (!response.ok) return;
+
+        const result = await response.json();
+
+        if (!result.success) return;
+
+        const wishlistIds = new Set(
+            result.data.map(product => String(product._id))
+        );
+
+        document.querySelectorAll(".wishlist-btn").forEach(button => {
+            const isActive = wishlistIds.has(button.dataset.productId);
+
+            button.setAttribute("aria-pressed", String(isActive));
+            button.classList.toggle("selected", isActive);
+            button.innerHTML = isActive ? "♥" : "♡";
+            button.title = isActive
+                ? "Remove from wishlist"
+                : "Add to wishlist";
+        });
+
+    } catch (error) {
+        console.error("Wishlist sync error:", error);
+    }
+}
+    // Sync wishlist when the page loads
+syncWishlistButtons();
+
+// Sync again when returning to this page
+window.addEventListener("pageshow", () => {
+    syncWishlistButtons();
+});
+
+// Sync when the browser tab becomes visible again
+document.addEventListener("visibilitychange", () => {
+    if (!document.hidden) {
+        syncWishlistButtons();
+    }
+});
+       
+async function updateWishlistButton(button) {
+    const productId = button.dataset.productId;
+    const isActive = button.getAttribute("aria-pressed") === "true";
+
+    try {
+        const response = await fetch(
+            isActive ? "/api/wishlist/remove" : "/api/wishlist/add",
+            {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                credentials: "same-origin",
+                body: JSON.stringify({ productId })
+            }
+        );
+
+       if (response.status === 401) {
+    window.location.href =
+        "/login?message=" +
+        encodeURIComponent("Please login to manage your wishlist.");
+    return;
+}
+
+const result = await response.json();
+
+        if (!response.ok || !result.success) {
+            shopMessage.textContent =
+                result.message || "Unable to update wishlist.";
+            return;
+        }
+
+        const nowActive = !isActive;
+
+        button.setAttribute("aria-pressed", String(nowActive));
+        button.classList.toggle("selected", nowActive);
+        button.innerHTML = nowActive ? "♥" : "♡";
+        button.title = nowActive
+            ? "Remove from wishlist"
+            : "Add to wishlist";
+
+        shopMessage.textContent = nowActive
+            ? "Added to wishlist!"
+            : "Removed from wishlist!";
+            
+
+    } catch (error) {
+        console.error("Wishlist error:", error);
+        shopMessage.textContent =
+            "Unable to connect to wishlist. Please try again.";
+    }
+}
+
+document.querySelectorAll(".wishlist-btn").forEach(button => {
+    const isActive = button.getAttribute("aria-pressed") === "true";
+
+    button.innerHTML = isActive ? "♥" : "♡";
+    button.classList.toggle("selected", isActive);
+
+    button.title = isActive
+        ? "Remove from wishlist"
+        : "Add to wishlist";
+});
+
+document.querySelectorAll(".wishlist-btn").forEach(button => {
+    button.addEventListener("click", () => {
+        updateWishlistButton(button);
+    });
+});
+ syncWishlistButtons();
+ 
+
+
+document.querySelectorAll(".add-cart-btn").forEach(button => {
+    button.addEventListener("click", async () => {
+        const productId = button.dataset.productId;
+
+        try {
+            button.disabled = true;
+
+            const response = await fetch("/api/cart/add", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                credentials: "same-origin",
+                body: JSON.stringify({
+                    productId,
+                    quantity: 1
+                })
+            });
+
+           if (response.status === 401) {
+    window.location.href =
+        "/login?message=" +
+        encodeURIComponent("Please login to add products to your cart.......");
+    return;
+}
+
+const result = await response.json();
+            if (!response.ok || !result.success) {
+                shopMessage.textContent =
+                    result.message || "Unable to add product to cart.";
+                return;
+            }
+
+            button.classList.add("added");
+            button.innerHTML = "✓ Added to Cart";
+
+            shopMessage.textContent = "Product added to cart!";
+
+            if (typeof updateCartCount === "function") {
+                await updateCartCount();
+            }
+
+        } catch (error) {
+            console.error("Add to cart error:", error);
+            shopMessage.textContent =
+                "Unable to connect to cart. Please try again.";
+        } finally {
+            button.disabled = false;
+        }
+    });
+});
+
+        
+
+ // Category and price filtering
+const categoryButtons = document.querySelectorAll(".category-btn");
+const productCards = document.querySelectorAll(".product-card");
+const minPriceRange = document.getElementById("minPriceRange");
+const maxPriceRange = document.getElementById("maxPriceRange");
+
+const minPriceValue = document.getElementById("minPriceValue");
+const maxPriceValue = document.getElementById("maxPriceValue");
+
+
+function applyProductFilters() {
+    const activeButton = document.querySelector(".category-btn.active");
+    const selectedCategory = activeButton.dataset.category;
+    const minPrice = Number(minPriceRange.value);
+const maxPrice = Number(maxPriceRange.value);
+
+    const sortValue = document.getElementById("sortProducts").value;
+    const inStockOnly = document.getElementById("inStockOnly").checked;
+
+    const productGrid = document.querySelector(".product-grid");
+
+    // Filter products
+    const visibleCards = [];
+
+    productCards.forEach(card => {
+        const category = card.querySelector(".product-category")
+            .textContent.trim();
+
+        const priceText = card.querySelector(".product-price")
+            .textContent.replace(/[₹,\s]/g, "");
+
+        const price = Number(priceText);
+
+        // Stock value comes from the product card's data attribute
+        const stock = Number(card.dataset.stock || 0);
+
+        const matchesCategory =
+            selectedCategory === "all" ||
+            category.toLowerCase() === selectedCategory.toLowerCase();
+
+      const matchesPrice = price >= minPrice && price <= maxPrice;
+        const matchesStock = !inStockOnly || stock > 0;
+
+        if (matchesCategory && matchesPrice && matchesStock) {
+            card.style.display = "";
+            visibleCards.push(card);
+        } else {
+            card.style.display = "none";
+        }
+    });
+
+    // Sort visible products
+    visibleCards.sort((a, b) => {
+        const priceA = Number(a.querySelector(".product-price")
+            .textContent.replace(/[₹,\s]/g, ""));
+        const priceB = Number(b.querySelector(".product-price")
+            .textContent.replace(/[₹,\s]/g, ""));
+
+        const nameA = a.querySelector("h3").textContent.trim();
+        const nameB = b.querySelector("h3").textContent.trim();
+
+        if (sortValue === "price-low") return priceA - priceB;
+        if (sortValue === "price-high") return priceB - priceA;
+        if (sortValue === "name-az") return nameA.localeCompare(nameB);
+
+        return 0;
+    });
+
+    visibleCards.forEach(card => productGrid.appendChild(card));
+}
+
+
+categoryButtons.forEach(button => {
+    button.addEventListener("click", () => {
+        categoryButtons.forEach(btn => btn.classList.remove("active"));
+        button.classList.add("active");
+
+        applyProductFilters();
+    });
+});
+
+// Minimum price slider
+minPriceRange.addEventListener("input", () => {
+    let minPrice = Number(minPriceRange.value);
+    let maxPrice = Number(maxPriceRange.value);
+
+    if (minPrice > maxPrice) {
+        maxPriceRange.value = minPrice;
+        maxPrice = minPrice;
+    }
+
+    minPriceValue.textContent =
+        minPrice.toLocaleString("en-IN");
+
+    maxPriceValue.textContent =
+        maxPrice.toLocaleString("en-IN");
+
+    applyProductFilters();
+});
+
+// Maximum price slider
+maxPriceRange.addEventListener("input", () => {
+    let minPrice = Number(minPriceRange.value);
+    let maxPrice = Number(maxPriceRange.value);
+
+    if (maxPrice < minPrice) {
+        minPriceRange.value = maxPrice;
+        minPrice = maxPrice;
+    }
+
+    minPriceValue.textContent =
+        minPrice.toLocaleString("en-IN");
+
+    maxPriceValue.textContent =
+        maxPrice.toLocaleString("en-IN");
+
+    applyProductFilters();
+});
+
+
+document.getElementById("sortProducts").addEventListener("change", () => {
+        applyProductFilters();
+    });
+
+document.getElementById("inStockOnly").addEventListener("change", () => {
+        applyProductFilters();
+    });
+
+
+    </script>
+</body>
+<%- include("../partials/footer") %>
+</html>

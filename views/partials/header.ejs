@@ -1,0 +1,58 @@
+<header class="site-header">
+
+    <!-- Homiva Logo -->
+    <a href="/" class="logo">
+        homiva<span>.</span>
+    </a>
+
+    <!-- Main Navigation -->
+    <nav class="main-nav">
+        <a href="/products">Shop All</a>
+        <a href="/#categories">Categories</a>
+        <a href="/#featured">New Arrivals</a>
+        <a href="/#about">Our Story</a>
+    </nav>
+
+    <!-- Header Actions -->
+    <div class="header-actions">
+
+        <!-- User Account -->
+        <% if (user) { %>
+            <a href="/profile" aria-label="My Profile" class="header-icon">
+                <svg viewBox="0 0 24 24">
+                    <circle cx="12" cy="8" r="3.5" />
+                    <path d="M5 21v-2a7 7 0 0 1 14 0v2" />
+                </svg>
+            </a>
+            <% } else { %>
+
+                <a href="/login" aria-label="My account" class="header-icon">
+                    <svg viewBox="0 0 24 24">
+                        <circle cx="12" cy="8" r="3.5" />
+                        <path d="M5 21v-2a7 7 0 0 1 14 0v2" />
+                    </svg>
+                </a>
+
+                <% } %>
+
+                    <!-- Wishlist -->
+                    <a href="/wishlist" aria-label="Wishlist" class="header-icon">
+                        <svg viewBox="0 0 24 24">
+                            <path
+                                d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8l1.1 1.1L12 21l7.8-7.5 1.1-1.1a5.5 5.5 0 0 0-.1-7.8Z" />
+                        </svg>
+                    </a>
+
+                    <!-- Shopping Cart -->
+                    <a href="/cart" aria-label="Shopping cart" class="header-icon">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M3 4h2l2.2 11.2a2 2 0 0 0 2 1.6h7.9a2 2 0 0 0 1.9-1.5L21 8H6" />
+                            <circle cx="10" cy="20" r="1" />
+                            <circle cx="18" cy="20" r="1" />
+                        </svg>
+                        <span class="cart-count" id="cartCount">0</span>
+                    </a>
+
+    </div>
+
+</header>

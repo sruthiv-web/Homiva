@@ -1,0 +1,161 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Create Account | Homiva</title>
+  <link rel="stylesheet" href="/css/signup.css">
+</head>
+<body>
+
+  <!-- Header -->
+  <header class="topbar">
+  <a href="/" class="brand">
+    <span>HOMIVA</span>
+    <small>NORDIC TRANQUILITY · KYOTO SOUL</small>
+  </a>
+</header>
+
+  <!-- Main Signup Layout -->
+ 
+    <section class="form-side">
+      <div class="signup-card">
+
+        <div class="flower-icon">❋</div>
+
+        <p class="eyebrow center">H O M E &nbsp; D É C O R &nbsp; &amp; &nbsp; L I V I N G</p>
+
+        <h2>Create Your Account</h2>
+
+        <p class="subtitle">
+          Create an account to explore our collection
+          and manage your orders.
+        </p>
+
+        <form id="signupForm">
+
+          <label for="name">FULL NAME</label>
+          <input
+            type="text"
+            id="name"
+            name="name"
+            placeholder="e.g. Eleanor Sinclair"
+            autocomplete="name"
+            required
+          >
+
+          <label for="email">EMAIL ADDRESS</label>
+          <input
+            type="email"
+            id="email"
+            name="email"
+            placeholder="e.g. name@example.com"
+            autocomplete="email"
+            required
+          >
+
+          <div class="password-row">
+
+            <div class="password-field">
+              <label for="password">PASSWORD</label>
+              <div class="password-input">
+                <input
+                  type="password"
+                  id="password"
+                  name="password"
+                  placeholder="Create password"
+                  autocomplete="new-password"
+                  minlength="8"
+                  required
+                >
+                <button
+                  type="button"
+                  class="toggle-password"
+                  data-target="password"
+                  aria-label="Show password"
+                >◎</button>
+              </div>
+            </div>
+
+            <div class="password-field">
+              <label for="confirmPassword">CONFIRM PASSWORD</label>
+              <div class="password-input">
+                <input
+                  type="password"
+                  id="confirmPassword"
+                  name="confirmPassword"
+                  placeholder="Re-enter password"
+                  autocomplete="new-password"
+                  minlength="8"
+                  required
+                >
+                <button
+                  type="button"
+                  class="toggle-password"
+                  data-target="confirmPassword"
+                  aria-label="Show confirm password"
+                >◎</button>
+              </div>
+            </div>
+
+          </div>
+
+          <label class="terms">
+            <input type="checkbox" id="terms" required>
+            <span>
+              By creating an account, you agree to Homiva's
+              <a href="/terms">Terms of Service</a> and
+              <a href="/privacy">Privacy Policy</a>.
+            </span>
+          </label>
+
+          <button type="submit" id="signupButton">
+            CREATE ACCOUNT <span>→</span>
+          </button>
+
+          <p id="signupMessage" role="status" aria-live="polite"></p>
+
+        </form>
+
+        <div class="signin-link">
+          Already have an account?
+          <a href="/login">Sign In →</a>
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Footer -->
+  <footer>
+    <span>© 2026 HOMIVA LIVING. ALL RIGHTS RESERVED.</span>
+
+    <div>
+      <a href="/privacy">PRIVACY POLICY</a>
+      <a href="/terms">TERMS OF SERVICE</a>
+    </div>
+  </footer>
+
+  <!-- Fetch API and JSON handling -->
+  <script src="/js/signup.js"></script>
+
+  <!-- Show/Hide Password -->
+  <script>
+    document.querySelectorAll(".toggle-password").forEach((button) => {
+      button.addEventListener("click", () => {
+        const input = document.getElementById(button.dataset.target);
+        const isHidden = input.type === "password";
+
+        input.type = isHidden ? "text" : "password";
+        button.setAttribute(
+          "aria-label",
+          isHidden ? "Hide password" : "Show password"
+        );
+      });
+    });
+  </script>
+
+</body>
+</html>

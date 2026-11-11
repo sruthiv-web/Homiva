@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout | Homiva</title>
+    <link rel="stylesheet" href="/css/checkout.css">
+    <link rel="stylesheet" href="/css/home.css">
+</head>
+
+<body>
+    <%- include("../partials/header", { user: user }) %>
+        <main class="checkout-container">
+
+            <h1>Checkout</h1>
+
+            <!-- Delivery Address -->
+            <section class="checkout-section">
+                <h2>Delivery Address</h2>
+
+                <!-- Selected Address -->
+                <div id="address-container">
+                    <!-- Selected address will be loaded here -->
+                </div>
+
+                <!-- Change Address Button -->
+                <button type="button" id="change-address-btn">
+                    Change Address
+                </button>
+                <button type="button" id="add-address-btn">
+                    + Add New Address
+                </button>
+                <!-- New Address Form -->
+                <div id="new-address-form" hidden>
+
+                    <h3>Add New Address</h3>
+
+                    <form id="checkout-address-form">
+
+                        <input type="text" name="fullName" placeholder="Full Name" required>
+
+                        <input type="tel" name="phone" placeholder="Phone Number" maxlength="10" required>
+
+                        <input type="text" name="houseName" placeholder="House Name" required>
+
+                        <input type="text" name="street" placeholder="Street" required>
+
+                        <input type="text" name="city" placeholder="City" required>
+
+                        <input type="text" name="state" placeholder="State" required>
+
+                        <input type="text" name="pincode" placeholder="Pincode" maxlength="6" required>
+
+                        <div class="address-form-actions">
+
+                            <button type="button" id="cancel-address-btn">
+                                Cancel
+                            </button>
+
+                            <button type="submit">
+                                Save Address
+                            </button>
+
+                        </div>
+
+                    </form>
+                </div>
+
+                <!-- Saved Addresses -->
+                <div id="saved-addresses-container" hidden>
+                    <!-- Saved addresses will appear here -->
+                </div>
+            </section>
+
+            <!-- Order Summary -->
+            <section class="checkout-section">
+                <h2>Order Summary</h2>
+
+                <div id="checkout-items">
+                    <!-- Cart products will be loaded here -->
+                </div>
+
+                <div class="checkout-total">
+                    <p>Subtotal: <span id="checkout-subtotal">₹0</span></p>
+                    <p>Shipping: <span id="checkout-shipping">₹0</span></p>
+                    <p>Discount: <span id="checkout-discount">₹0</span></p>
+                    <h3>Total: <span id="checkout-total">₹0</span></h3>
+                </div>
+            </section>
+            <!-- Payment Method -->
+            <section class="checkout-section">
+                <h2>Payment Method</h2>
+
+                <div class="payment-options">
+                    <label>
+                        <input type="radio" name="paymentMethod" value="COD" checked>
+                        Cash on Delivery
+                    </label>
+
+                    <label>
+                        <input type="radio" name="paymentMethod" value="ONLINE">
+                        Pay Online (Razorpay)
+                    </label>
+                </div>
+            </section>
+            <!-- Place Order -->
+            <button type="button" id="place-order-btn">
+                Place Order
+            </button>
+
+        </main>
+        <%- include("../partials/footer") %>
+            <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+            <script src="/js/checkout.js"></script>
+</body>
+
+</html>

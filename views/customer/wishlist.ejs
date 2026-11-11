@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Wishlist | Homiva</title>
+    <link rel="stylesheet" href="/css/home.css">
+    <link rel="stylesheet" href="/css/wishlist.css">
+</head>
+
+<body>
+   <%- include("../partials/header", { user: user }) %>
+    <main class="wishlist-page">
+        <div class="wishlist-heading">
+            <p class="eyebrow">YOUR COLLECTION</p>
+            <h1>My Wishlist <span>♡</span></h1>
+            <p>Keep the pieces you love in one place.</p>
+        </div>
+
+        <div id="wishlistMessage" role="status"></div>
+        <div id="wishlistContainer" class="wishlist-container">
+            <p>Loading your wishlist...</p>
+        </div>
+    </main>
+   <%- include("../partials/footer") %>
+    <script>
+        const wishlistContainer =
+            document.getElementById("wishlistContainer");
+
+        const wishlistMessage =
+            document.getElementById("wishlistMessage");
+
+        async function loadWishlist() {
+            try {
+                const response = await fetch("/api/wishlist/items", {
+                    credentials: "same-origin",
+                    headers: {
+                        "Accept": "application/json"
+                    }
+                });
+
+                if (response.status === 401) {
+                    window.location.href = "/login";
+                    return;
+                }
+
+                if (response.status === 403 && result.blocked) {
+                    window.location.href = "/suspended";
+                    return;
+                }
+
+                const result = await response.json();
+
+if (response.status === 401) {
+    window.location.href = "/login";
+    return;
+}
+
+if (response.status === 403 && result.blocked) {
+    window.location.href = "/suspended";
+    return;
+}
+
+if (!response.ok || !result.success) {
+    throw new Error(result.message || "Unable to remove product.");
+}
+
+                const products = result.data;
+
+                if (!products.length) {
+                    wishlistContainer.innerHTML = `
+                        <div class="wishlist-empty">
+                            <div class="wishlist-heart">♡</div>
+                            <h2>Your wishlist is waiting</h2>
+                            <p>Save your favourite home decor pieces here.</p>
+                            <a href="/products" class="shop-button">
+                                Explore Products
+                            </a>
+                        </div>
+                    `;
+                    return;
+                }
+
+                wishlistContainer.replaceChildren(
+                    ...products.map(product => {
+                        const image = product.image ||
+                            (product.images && product.images[0]) || "";
+
+                        const card = document.createElement("div");
+                        card.className = "wishlist-card";
+
+                        const img = document.createElement("img");
+                        img.src = image;
+                        img.alt = product.name;
+                        img.className = "wishlist-product-image";
+
+                        const details = document.createElement("div");
+                        details.className = "wishlist-product-details";
+
+                        const name = document.createElement("h3");
+                        name.textContent = product.name;
+
+                        const price = document.createElement("p");
+                        price.textContent = `₹${Number(product.price).toLocaleString("en-IN")}`;
+
+                        const viewLink = document.createElement("a");
+                        viewLink.href = `/products/${encodeURIComponent(product._id)}`;
+                        viewLink.className = "shop-button";
+                        viewLink.textContent = "View Product";
+
+
+                        const heartButton = document.createElement("button");
+                        heartButton.type = "button";
+                        heartButton.className = "wishlist-remove-btn";
+                        heartButton.innerHTML = "♥";
+                        heartButton.title = "Remove from wishlist";
+                        heartButton.setAttribute("aria-label", "Remove from wishlist");
+
+                        heartButton.addEventListener("click", async () => {
+
+                            try {
+                                const response = await fetch("/api/wishlist/remove", {
+                                    method: "POST",
+                                    headers: {
+                                        "Content-Type": "application/json",
+                                        "Accept": "application/json"
+                                    },
+                                    credentials: "same-origin",
+                                    body: JSON.stringify({ productId: product._id })
+                                });
+
+                                const result = await response.json();
+
+                                if (!response.ok || !result.success) {
+                                    throw new Error(result.message || "Unable to remove product.");
+                                }
+
+                                await loadWishlist();
+                            } catch (error) {
+                                console.error("Remove wishlist error:", error);
+                                wishlistMessage.textContent = error.message;
+                            }
+                        });
+
+                        details.append(name, price, heartButton, viewLink);
+                        card.append(img, details);
+
+                        return card;
+                    })
+                );
+
+            } catch (error) {
+                console.error("Wishlist loading error:", error);
+                wishlistMessage.textContent =
+                    "Unable to load your wishlist. Please try again.";
+            }
+        }
+
+        loadWishlist();
+    </script>
+</body>
+
+</html>

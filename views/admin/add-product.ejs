@@ -1,0 +1,145 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Product | Homiva</title>
+
+    <link rel="stylesheet" href="/css/admin-dashboard.css">
+    <link rel="stylesheet" href="/css/admin-products.css">
+
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<div class="admin-layout">
+
+    <aside class="sidebar">
+        <a href="/admin/dashboard" class="brand">
+            <span class="brand-icon">⌂</span>
+            <span class="brand-name">Homiva</span>
+            <small>HOME DECOR</small>
+        </a>
+
+        <nav class="sidebar-nav">
+                <a href="/admin/dashboard" class="nav-link">⌂ <span>Dashboard</span></a>
+                <a href="/admin/products" class="nav-link active">◇ <span>Products</span></a>
+                <a href="/admin/orders" class="nav-link">🛒 <span>Orders</span></a>
+                <a href="/admin/users-page" class="nav-link">♙ <span>Users</span></a>
+                <a href="/admin/coupons" class="nav-link ">▦ <span>Coupons</span></a>
+            </nav>
+
+        <form action="/admin/logout" method="POST" class="logout-form">
+            <button type="submit" class="logout-link">
+                ↪ <span>Logout</span>
+            </button>
+        </form>
+    </aside>
+
+    <main class="main-content">
+
+        <header class="topbar">
+            <button class="menu-toggle" id="menuToggle" aria-label="Toggle menu">☰</button>
+
+            <div class="admin-profile">
+                <span class="avatar">A</span>
+                <span>Admin</span>
+            </div>
+        </header>
+
+        <section class="products-content">
+
+            <div class="products-heading">
+                <div>
+                    <h1>Add New Product</h1>
+                    <p>Enter the details of your home decor product.</p>
+                </div>
+
+                <a href="/admin/products" class="add-product-btn">
+                    ← Back to Products
+                </a>
+            </div>
+
+            <div class="products-container">
+
+                <div class="form-heading">
+                    <span class="form-icon">◇</span>
+                    <div>
+                        <h2>Product Details</h2>
+                        <p>Fill in the product information below.</p>
+                    </div>
+                </div>
+
+                <form action="/admin/products" method="POST" enctype="multipart/form-data">
+
+                    <label for="name">Product Name</label>
+                    <input type="text" id="name" name="name" required>
+
+                    <label for="description">Description</label>
+                    <textarea id="description" name="description" rows="4" placeholder="Describe your product..."></textarea>
+
+                    <div class="form-row">
+                        <div>
+                            <label for="price">Price (₹)</label>
+                            <input type="number" id="price" name="price" min="0" step="0.01" required>
+                        </div>
+
+                        <div>
+                            <label for="stock">Stock</label>
+                            <input type="number" id="stock" name="stock" min="0" value="0" required>
+                        </div>
+                    </div>
+
+                    <label for="category">Category</label>
+                    <input type="text" id="category" name="category" required>
+
+                   
+<label for="images">Product Images</label>
+<input
+    type="file"
+    id="images"
+    name="images"
+    accept="image/*"
+    multiple
+    required
+>
+<p class="form-help">
+    Select multiple images of this product. The first image will be the main image.
+</p>
+
+<div class="featured-option">
+    <label for="isFeatured">
+        <input
+            type="checkbox"
+            id="isFeatured"
+            name="isFeatured"
+            value="true"
+        >
+        Show on Homepage
+    </label>
+    <p class="form-help">
+        Select this option to display this product in the featured products section on the homepage.
+    </p>
+</div>
+
+
+                    <button type="submit" class="submit-product">
+                        Save Product
+                    </button>
+
+                </form>
+            </div>
+
+        </section>
+    </main>
+</div>
+
+<script>
+    document.getElementById("menuToggle").addEventListener("click", () => {
+        document.querySelector(".sidebar").classList.toggle("sidebar-open");
+    });
+</script>
+
+</body>
+</html>

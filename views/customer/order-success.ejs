@@ -1,0 +1,47 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Successful | Homiva</title>
+    <link rel="stylesheet" href="/css/home.css">
+    <link rel="stylesheet" href="/css/order-success.css">
+</head>
+<body>
+
+<%- include("../partials/header", { user: user }) %>
+
+<main class="order-success-container">
+    <div class="success-card">
+
+        <div class="success-icon">✓</div>
+
+        <h1>Order Placed Successfully!</h1>
+
+        <p class="success-message">
+            Thank you for shopping with Homiva.
+            Your order has been received.
+        </p>
+
+        <div class="order-info">
+            <p>Order ID</p>
+            <h3><%= orderId %></h3>
+        </div>
+
+        <div class="payment-info">
+            <p>Payment Method: <strong>Cash on Delivery</strong></p>
+            <p>Payment Status: <strong>Pending</strong></p>
+        </div>
+
+        <a href="/products" class="continue-shopping">
+            Continue Shopping
+        </a>
+
+    </div>
+</main>
+
+<%- include("../partials/footer") %>
+
+</body>
+</html>

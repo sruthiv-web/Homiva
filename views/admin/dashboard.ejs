@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Homiva | Admin Dashboard</title>
+  <link rel="stylesheet" href="/css/admin-dashboard.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link
+    href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap"
+    rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+  <div class="admin-layout">
+
+    <aside class="sidebar">
+      <a href="/admin/dashboard" class="brand">
+        <span class="brand-icon">⌂</span>
+        <span class="brand-name">Homiva</span>
+        <small>HOME DECOR</small>
+      </a>
+
+      <nav class="sidebar-nav">
+        <a href="/admin/dashboard" class="nav-link active">⌂ <span>Dashboard</span></a>
+        <a href="/admin/products" class="nav-link">◇ <span>Products</span></a>
+        <a href="/admin/orders" class="nav-link">🛒 <span>Orders</span></a>
+        <a href="/admin/users-page" class="nav-link">♙ <span>Users</span></a>
+        <a href="/admin/coupons" class="nav-link ">▦ <span>Coupons</span></a>
+      </nav>
+
+      <form action="/admin/logout" method="POST" class="logout-form">
+        <button type="submit" class="logout-link">
+          ↪ <span>Logout</span>
+        </button>
+      </form>
+    </aside>
+    <main class="main-content">
+      <header class="topbar">
+        <button class="menu-toggle" id="menuToggle" aria-label="Toggle menu">☰</button>
+
+        <div class="admin-profile">
+          <span class="avatar">A</span>
+          <span>Admin</span>
+        </div>
+      </header>
+
+      <section class="dashboard-content">
+        <div class="welcome-row">
+          <div>
+            <h1>Welcome Back, Admin!</h1>
+            <p>Here's what's happening with your store today.</p>
+          </div>
+          <span class="date-label" id="currentDate"></span>
+        </div>
+
+        <section class="stats-grid">
+          <article class="stat-card">
+            <div class="stat-icon">◇</div>
+            <div>
+              <p>Total Products</p>
+              <h2 id="totalProductsCount">0</h2>
+            </div>
+          </article>
+          <article class="stat-card">
+            <div class="stat-icon">♙</div>
+            <div>
+              <p>Total Users</p>
+              <h2 id="totalUsersCount">0</h2>
+            </div>
+          </article>
+          <article class="stat-card">
+            <div class="stat-icon">🛒</div>
+            <div>
+              <p>Total Orders</p>
+              <h2 id="totalOrdersCount">0</h2>
+            </div>
+          </article>
+          <article class="stat-card">
+            <div class="stat-icon">₹</div>
+            <div>
+              <p>Total Revenue</p>
+              <h2 id="totalRevenueCount">₹0</h2>
+            </div>
+          </article>
+        </section>
+
+        <!-- Analytics Dashboard -->
+        <section class="analytics-section">
+
+          <div class="analytics-heading">
+            <div>
+              <h2>Store Analytics</h2>
+              <p>Track your Homiva business performance.</p>
+            </div>
+          </div>
+
+          <div class="analytics-grid">
+
+            <article class="panel chart-card">
+              <h3>Revenue Timeline</h3>
+              <canvas id="revenueChart"></canvas>
+            </article>
+
+            <article class="panel chart-card">
+              <h3>Sales by Category</h3>
+              <canvas id="categoryChart"></canvas>
+            </article>
+
+            <article class="panel chart-card">
+              <h3>Top 5 Products</h3>
+              <canvas id="topProductsChart"></canvas>
+            </article>
+
+            <article class="panel chart-card">
+              <h3>Order Status Distribution</h3>
+              <canvas id="orderStatusChart"></canvas>
+            </article>
+
+          </div>
+
+        </section>
+
+        <section class="dashboard-bottom">
+          <article class="panel orders-panel">
+            <div class="panel-heading">
+              <h2>Recent Orders</h2>
+              <a href="/admin/orders">View All →</a>
+            </div>
+
+            <div class="table-wrapper">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Order</th>
+                    <th>Product</th>
+                    <th>Customer</th>
+                    <th>Date</th>
+                    <th>Status</th>
+                    <th>Amount</th>
+                  </tr>
+                </thead>
+                <tbody id="recentOrdersContainer">
+                  <tr>
+                    <td colspan="6" style="text-align: center;">
+                      Loading recent orders...
+                    </td>
+                  </tr>
+                </tbody>
+
+              </table>
+            </div>
+          </article>
+
+
+        </section>
+      </section>
+    </main>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script>
+
+    const dateElement = document.getElementById("currentDate");
+    dateElement.textContent = new Date().toLocaleDateString("en-IN", {
+      day: "numeric",
+      month: "short",
+      year: "numeric"
+    });
+
+    document.getElementById("menuToggle").addEventListener("click", () => {
+      document.querySelector(".sidebar").classList.toggle("sidebar-open");
+    });
+
+    //user count
+    async function loadDashboardStats() {
+      const usersCountElement = document.getElementById("totalUsersCount");
+      const ordersCountElement = document.getElementById("totalOrdersCount");
+      const productsCountElement = document.getElementById("totalProductsCount");
+      try {
+        const response = await fetch("/admin/dashboard-stats");
+        const result = await response.json();
+
+        if (!response.ok || !result.success) {
+          throw new Error("Unable to load dashboard stats");
+        }
+
+        usersCountElement.textContent = result.data.totalUsers;
+        ordersCountElement.textContent = result.data.totalOrders;
+        productsCountElement.textContent = result.data.totalProducts;
+        document.getElementById("totalRevenueCount").textContent =
+          "₹" + result.data.totalRevenue.toLocaleString("en-IN");
+      } catch (error) {
+        console.error("Dashboard stats error:", error);
+
+        usersCountElement.textContent = "—";
+        ordersCountElement.textContent = "—";
+        productsCountElement.textContent = "—";
+        document.getElementById("totalRevenueCount").textContent = "—";
+      }
+    }
+
+    loadDashboardStats();
+    // Load recent orders
+    async function loadRecentOrders() {
+      const container = document.getElementById("recentOrdersContainer");
+
+      try {
+        const response = await fetch("/admin/recent-orders");
+        const result = await response.json();
+
+        if (!response.ok || !result.success) {
+          throw new Error(result.message || "Unable to load recent orders.");
+        }
+
+        container.replaceChildren();
+
+        if (result.data.length === 0) {
+          const row = document.createElement("tr");
+          row.innerHTML = `
+                <td colspan="6" style="text-align:center;">
+                    No orders found.
+                </td>
+            `;
+          container.appendChild(row);
+          return;
+        }
+
+        result.data.forEach(order => {
+          const row = document.createElement("tr");
+
+          const orderId = document.createElement("td");
+          orderId.textContent = "#" + order._id.slice(-6);
+
+          const product = document.createElement("td");
+          product.textContent = order.items
+            .map(item => item.name)
+            .join(", ");
+
+          const customer = document.createElement("td");
+          customer.textContent = order.user?.name || "Unknown";
+
+          const date = document.createElement("td");
+          date.textContent = new Date(order.createdAt).toLocaleDateString("en-IN", {
+            day: "numeric",
+            month: "short"
+          });
+
+          const statusCell = document.createElement("td");
+          const status = document.createElement("span");
+          status.className = "status " + order.orderStatus.toLowerCase();
+          status.textContent = order.orderStatus;
+          statusCell.appendChild(status);
+
+          const amount = document.createElement("td");
+          amount.textContent = "₹" + order.totalAmount.toLocaleString("en-IN");
+
+          row.append(
+            orderId,
+            product,
+            customer,
+            date,
+            statusCell,
+            amount
+          );
+
+          container.appendChild(row);
+        });
+
+      } catch (error) {
+        console.error("Recent orders error:", error);
+
+        container.innerHTML = `
+            <tr>
+                <td colspan="6" style="text-align:center;">
+                    Unable to load recent orders.
+                </td>
+            </tr>
+        `;
+      }
+    }
+
+    loadRecentOrders();
+    loadDashboardStats();
+
+    // Load Analytics Dashboard
+    async function loadDashboardAnalytics() {
+      try {
+        const response = await fetch("/admin/dashboard-analytics");
+        const result = await response.json();
+
+        if (!response.ok || !result.success) {
+          throw new Error("Unable to load analytics");
+        }
+
+        const {
+          revenueTimeline,
+          salesByCategory,
+          topProducts,
+          orderStatusDistribution
+        } = result.data;
+
+        // 1. Revenue Timeline Chart
+        new Chart(document.getElementById("revenueChart"), {
+          type: "line",
+          data: {
+            labels: revenueTimeline.map(item => item._id),
+            datasets: [{
+              label: "Revenue (₹)",
+              data: revenueTimeline.map(item => item.revenue),
+              borderColor: "#8b7355",
+              backgroundColor: "rgba(139, 115, 85, 0.15)",
+              fill: true,
+              tension: 0.4
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false
+          }
+        });
+
+        // 2. Sales by Category Chart
+        new Chart(document.getElementById("categoryChart"), {
+          type: "pie",
+          data: {
+            labels: salesByCategory.map(item => item._id),
+            datasets: [{
+              data: salesByCategory.map(item => item.totalSales)
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false
+          }
+        });
+
+        // 3. Top 5 Products Chart
+        new Chart(document.getElementById("topProductsChart"), {
+          type: "bar",
+          data: {
+            labels: topProducts.map(item => item.productName),
+            datasets: [{
+              label: "Units Sold",
+              data: topProducts.map(item => item.unitsSold),
+              backgroundColor: "#a68b6a"
+            }]
+          },
+          options: {
+            indexAxis: "y",
+            responsive: true,
+            maintainAspectRatio: false,
+            layout: {
+              padding: {
+                left: 10,
+                right: 15
+              }
+            },
+            scales: {
+              y: {
+                ticks: {
+                  autoSkip: false,
+                  font: {
+                    size: 10
+                  },
+                  callback: function (value) {
+                    const label = this.getLabelForValue(value);
+
+                    return label.length > 20
+                      ? label.substring(0, 20) + "..."
+                      : label;
+                  }
+                }
+              }
+            }
+          }
+        });
+
+        // 4. Order Status Distribution Chart
+        new Chart(document.getElementById("orderStatusChart"), {
+          type: "doughnut",
+          data: {
+            labels: orderStatusDistribution.map(item => item._id),
+            datasets: [{
+              data: orderStatusDistribution.map(item => item.count)
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false
+          }
+        });
+
+      } catch (error) {
+        console.error("Analytics loading error:", error);
+      }
+    }
+
+    loadDashboardAnalytics();
+
+  </script>
+</body>
+
+</html>

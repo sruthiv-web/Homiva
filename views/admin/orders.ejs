@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Homiva | Manage Orders</title>
+    <link rel="stylesheet" href="/css/admin-dashboard.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link
+        href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap"
+        rel="stylesheet">
+</head>
+
+<body>
+    <div class="admin-layout">
+
+        <aside class="sidebar">
+            <a href="/admin/dashboard" class="brand">
+                <span class="brand-icon">⌂</span>
+                <span class="brand-name">Homiva</span>
+                <small>HOME DECOR</small>
+            </a>
+
+             <nav class="sidebar-nav">
+                <a href="/admin/dashboard" class="nav-link">⌂ <span>Dashboard</span></a>
+                <a href="/admin/products" class="nav-link">◇ <span>Products</span></a>
+                <a href="/admin/orders" class="nav-link active">🛒 <span>Orders</span></a>
+                <a href="/admin/users-page" class="nav-link">♙ <span>Users</span></a>
+                <a href="/admin/coupons" class="nav-link ">▦ <span>Coupons</span></a>
+            </nav>
+
+            <form action="/admin/logout" method="POST" class="logout-form">
+                <button type="submit" class="logout-link">↪ <span>Logout</span></button>
+            </form>
+        </aside>
+
+        <main class="main-content">
+            <header class="topbar">
+                <button class="menu-toggle" id="menuToggle" aria-label="Toggle menu">☰</button>
+                <div class="search-box">
+                    <span>⌕</span>
+                    <input type="search" placeholder="Search orders..." id="orderSearch">
+                </div>
+                <div class="admin-profile">
+                    <span class="avatar">A</span>
+                    <span>Admin</span>
+                </div>
+            </header>
+
+            <section class="dashboard-content">
+                <div class="welcome-row">
+                    <div>
+                        <h1>Manage Orders</h1>
+                        <p>View and manage customer orders.</p>
+                    </div>
+                    <span class="date-label" id="currentDate"></span>
+                </div>
+
+
+                <div class="orders-panel">
+                    <div class="panel-heading">
+                        <h2>All Orders</h2>
+                        <span id="ordersCount">0 Orders</span>
+                    </div>
+
+                    <div class="table-wrapper">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Order ID</th>
+                                    <th>Customer</th>
+                                    <th>Date</th>
+                                    <th>Products</th>
+                                    <th>Amount</th>
+                                    <th>Payment</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+
+                            <tbody id="orders-container">
+                                <tr>
+                                    <td colspan="8">Loading orders...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <!-- Order Details Modal -->
+                <div id="orderDetailsModal" class="order-modal">
+                    <div class="order-modal-content">
+
+                        <div class="order-modal-header">
+                            <h2>Order Details</h2>
+                            <button type="button" id="closeOrderModal">&times;</button>
+                        </div>
+
+                        <div id="orderDetailsContent">
+                            <!-- Order details will be displayed here -->
+                        </div>
+
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        document.getElementById("currentDate").textContent =
+            new Date().toLocaleDateString("en-IN", {
+                day: "numeric",
+                month: "short",
+                year: "numeric"
+            });
+
+        document.getElementById("menuToggle").addEventListener("click", () => {
+            document.querySelector(".sidebar").classList.toggle("sidebar-open");
+        });
+        // View complete order details
+        function viewOrderDetails(orderId) {
+            const order = allOrders.find(item => item._id === orderId);
+
+            if (!order) {
+                alert("Order details not found.");
+                return;
+            }
+
+            const modal = document.getElementById("orderDetailsModal");
+            const content = document.getElementById("orderDetailsContent");
+
+            content.replaceChildren();
+
+            // Order information
+            const orderInfo = document.createElement("div");
+
+            orderInfo.innerHTML = `
+    <h3>Order Information</h3>
+    <p><strong>Order ID:</strong> ${escapeHTML(order._id)}</p>
+    <p><strong>Date:</strong> ${new Date(order.createdAt).toLocaleDateString("en-IN")}</p>
+    <p><strong>Status:</strong> <span id="currentOrderStatus">${escapeHTML(order.orderStatus)}</span></p>
+`;
+
+            const statusSelect = document.createElement("select");
+            statusSelect.id = "orderStatusSelect";
+
+           const allowedTransitions = {
+    Pending: ["Confirmed", "Cancelled"],
+    Confirmed: ["Shipped", "Cancelled"],
+    Shipped: ["Out for Delivery"],
+    "Out for Delivery": ["Delivered"],
+    Delivered: ["Returned"],
+    Returned: ["Refunded"],
+    Refunded: [],
+    Cancelled: []
+};
+
+            const statuses = allowedTransitions[order.orderStatus] || [];
+
+            statuses.forEach(status => {
+                const option = document.createElement("option");
+                option.value = status;
+                option.textContent = status;
+                option.selected = status === order.orderStatus;
+                statusSelect.appendChild(option);
+            });
+
+            const updateButton = document.createElement("button");
+            updateButton.type = "button";
+            updateButton.textContent = "Update Status";
+            updateButton.className = "homiva-btn";
+            updateButton.className = "homiva-btn";
+            statusSelect.className = "homiva-select";
+            updateButton.addEventListener("click", async () => {
+                try {
+                    const response = await fetch(
+                        `/admin/orders/${order._id}/status`,
+                        {
+                            method: "PATCH",
+                            headers: {
+                                "Content-Type": "application/json"
+                            },
+                            body: JSON.stringify({
+                                orderStatus: statusSelect.value
+                            })
+                        }
+                    );
+
+                    const result = await response.json();
+
+                    if (!response.ok || !result.success) {
+                        throw new Error(result.message || "Status update failed.");
+                    }
+
+                    order.orderStatus = result.data.orderStatus;
+
+                    alert("Order status updated successfully.");
+
+                    viewOrderDetails(order._id);
+
+                    loadAdminOrders();
+
+                } catch (error) {
+                    console.error("Status update error:", error);
+                    alert(error.message);
+                }
+            });
+            if (statuses.length > 0) {
+                orderInfo.append(statusSelect, updateButton);
+            }
+
+            // Customer information
+            const customerInfo = document.createElement("div");
+            customerInfo.innerHTML = `
+        <h3>Customer Information</h3>
+        <p><strong>Name:</strong> ${escapeHTML(order.user?.name || "Unknown")}</p>
+        <p><strong>Email:</strong> ${escapeHTML(order.user?.email || "Not available")}</p>
+        <p><strong>Phone:</strong> ${escapeHTML(order.shippingAddress?.phone || "Not available")}</p>
+    `;
+
+            // Products
+            const productsSection = document.createElement("div");
+            productsSection.innerHTML = "<h3>Ordered Products</h3>";
+
+            order.items.forEach(item => {
+                const product = document.createElement("div");
+                product.className = "order-detail-product";
+
+                const image = document.createElement("img");
+                image.src = item.image || "/images/placeholder.png";
+                image.alt = item.name;
+                image.className = "order-detail-image";
+
+                const details = document.createElement("div");
+
+                const name = document.createElement("p");
+                name.textContent = item.name;
+
+                const quantity = document.createElement("p");
+                quantity.textContent = `Quantity: ${item.quantity}`;
+
+                const price = document.createElement("p");
+                price.textContent = `Price: ₹${item.price.toFixed(2)}`;
+
+                details.append(name, quantity, price);
+                product.append(image, details);
+                productsSection.appendChild(product);
+            });
+
+            // Shipping address
+            const address = order.shippingAddress || {};
+
+            const addressSection = document.createElement("div");
+            addressSection.innerHTML = `
+        <h3>Delivery Address</h3>
+        <p>${escapeHTML(address.fullName || "")}</p>
+        <p>${escapeHTML(address.houseName || "")}, ${escapeHTML(address.street || "")}</p>
+        <p>${escapeHTML(address.city || "")}, ${escapeHTML(address.state || "")}</p>
+        <p>Pincode: ${escapeHTML(address.pincode || "")}</p>
+    `;
+
+            // Payment and amount details
+            const paymentSection = document.createElement("div");
+            paymentSection.innerHTML = `
+        <h3>Payment Information</h3>
+        <p><strong>Payment Method:</strong> ${escapeHTML(order.paymentMethod)}</p>
+        <p><strong>Payment Status:</strong> ${escapeHTML(order.paymentStatus)}</p>
+        <p><strong>Subtotal:</strong> ₹${order.subtotal.toFixed(2)}</p>
+        <p><strong>Shipping:</strong> ₹${order.shippingCharge.toFixed(2)}</p>
+        <p><strong>Discount:</strong> ₹${order.discount.toFixed(2)}</p>
+        <h3>Total: ₹${order.totalAmount.toFixed(2)}</h3>
+    `;
+
+            content.append(
+                orderInfo,
+                customerInfo,
+                productsSection,
+                addressSection,
+                paymentSection
+            );
+
+            modal.style.display = "flex";
+        }
+
+        // Escape HTML special characters
+        function escapeHTML(value) {
+            return String(value).replace(/[&<>"']/g, character => ({
+                "&": "&amp;",
+                "<": "&lt;",
+                ">": "&gt;",
+                '"': "&quot;",
+                "'": "&#039;"
+            })[character]);
+        }
+        // Close order details modal
+        document.getElementById("closeOrderModal").addEventListener("click", () => {
+            document.getElementById("orderDetailsModal").style.display = "none";
+        });
+
+        // Close modal when clicking outside
+        document.getElementById("orderDetailsModal").addEventListener("click", event => {
+            if (event.target.id === "orderDetailsModal") {
+                event.currentTarget.style.display = "none";
+            }
+        });
+        let allOrders = [];
+        // Load all orders
+        async function loadAdminOrders() {
+            const ordersContainer = document.getElementById("orders-container");
+            const ordersCount = document.getElementById("ordersCount");
+
+            try {
+                const response = await fetch("/admin/orders/data", {
+                    method: "GET",
+                    credentials: "same-origin",
+                    headers: {
+                        "Accept": "application/json"
+                    }
+                });
+
+                const result = await response.json();
+
+                if (!response.ok || !result.success) {
+                    throw new Error(result.message || "Unable to load orders.");
+                }
+                allOrders = result.data;
+                ordersCount.textContent = `${result.count} Orders`;
+                ordersContainer.replaceChildren();
+
+                if (result.data.length === 0) {
+                    const row = document.createElement("tr");
+                    const cell = document.createElement("td");
+
+                    cell.colSpan = 8;
+                    cell.textContent = "No orders found.";
+
+                    row.appendChild(cell);
+                    ordersContainer.appendChild(row);
+                    return;
+                }
+
+                result.data.forEach(order => {
+                    const row = document.createElement("tr");
+
+                    const orderId = document.createElement("td");
+                    orderId.textContent = `#${order._id.slice(-8)}`;
+
+                    const customer = document.createElement("td");
+                    customer.textContent = order.user
+                        ? order.user.name
+                        : "Unknown";
+
+                    const date = document.createElement("td");
+                    date.textContent = new Date(order.createdAt)
+                        .toLocaleDateString("en-IN");
+
+                    const products = document.createElement("td");
+                    products.textContent = order.items
+                        .map(item => `${item.name} (x${item.quantity})`)
+                        .join(", ");
+
+                    const amount = document.createElement("td");
+                    amount.textContent = `₹${order.totalAmount.toFixed(2)}`;
+
+                    const payment = document.createElement("td");
+                    payment.textContent = order.paymentMethod;
+
+                    const status = document.createElement("td");
+                    status.textContent = order.orderStatus;
+                    const actions = document.createElement("td");
+
+                    const viewButton = document.createElement("button");
+                    viewButton.type = "button";
+                    viewButton.textContent = "View Details";
+                    viewButton.className = "view-order-btn";
+
+                    viewButton.addEventListener("click", () => {
+                        viewOrderDetails(order._id);
+                    });
+
+                    actions.appendChild(viewButton);
+                    row.append(
+                        orderId,
+                        customer,
+                        date,
+                        products,
+                        amount,
+                        payment,
+                        status,
+                        actions
+                    );
+
+                    ordersContainer.appendChild(row);
+                });
+
+            } catch (error) {
+                console.error("Admin orders error:", error);
+                ordersContainer.textContent = "Unable to load orders.";
+            }
+        }
+
+        loadAdminOrders();
+    </script>
+</body>
+
+</html>

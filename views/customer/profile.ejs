@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>My Profile | Homiva</title>
+
+    <link rel="stylesheet" href="/css/home.css">
+
+    <link rel="stylesheet" href="/css/profile.css">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@400;500&display=swap"
+        rel="stylesheet">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+</head>
+
+<body>
+
+    <!-- Header -->
+
+    <%- include("../partials/header", { user: user }) %>
+
+        <main class="profile-page">
+
+            <!-- Page Heading -->
+
+            <div class="profile-heading">
+
+                <p class="profile-subtitle">YOUR ACCOUNT</p>
+
+                <h1>My Account</h1>
+
+                <p>Manage your personal information and orders.</p>
+
+            </div>
+
+            <div class="profile-layout">
+
+                <!-- Sidebar -->
+
+                <aside class="profile-sidebar">
+
+                    <!-- User Information -->
+
+                    <div class="profile-user">
+
+                        <div class="profile-avatar">
+
+                            <%= user.name.charAt(0).toUpperCase() %>
+
+                        </div>
+
+                        <div>
+
+                            <h3>
+                                <%= user.name %>
+                            </h3>
+
+                            <p>
+                                <%= user.email %>
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                    <!-- Navigation -->
+
+                    <nav class="profile-navigation">
+
+                        <button type="button" class="profile-nav-item active" data-section="personal">
+
+                            <i class="fa-regular fa-user"></i>
+
+                            My Profile
+
+                        </button>
+
+                        <button type="button" class="profile-nav-item" data-section="addresses">
+
+                            <i class="fa-solid fa-location-dot"></i>
+
+                            My Addresses
+
+                        </button>
+
+                        <button type="button" class="profile-nav-item" data-section="wishlist">
+
+                            <i class="fa-regular fa-heart"></i>
+
+                            My Wishlist
+
+                        </button>
+
+                        <button type="button" class="profile-nav-item" data-section="orders">
+
+                            <i class="fa-solid fa-bag-shopping"></i>
+
+                            My Orders
+
+                        </button>
+
+                        <button type="button" id="logoutBtn" class="profile-logout">
+
+                            <i class="fa-solid fa-arrow-right-from-bracket"></i>
+
+                            Logout
+
+                        </button>
+
+                    </nav>
+
+                </aside>
+
+                <!-- Main Content -->
+
+                <section class="profile-content">
+
+                    <!-- PERSONAL DETAILS SECTION -->
+
+                    <div id="personal-section" class="profile-section active">
+
+                        <div class="personal-header">
+
+                            <div>
+
+                                <p class="profile-subtitle">ACCOUNT INFORMATION</p>
+
+                                <h2>Personal Details</h2>
+
+                            </div>
+
+                            <button type="button" id="editProfileBtn">
+
+                                <i class="fa-solid fa-pen"></i>
+
+                                Edit Profile
+
+                            </button>
+
+                        </div>
+
+                        <!-- Display Personal Details -->
+
+                        <div id="profileDetails" class="personal-details-card">
+
+                            <div class="personal-detail-row">
+
+                                <div class="detail-icon">
+
+                                    <i class="fa-regular fa-user"></i>
+
+                                </div>
+
+                                <div class="detail-info">
+
+                                    <label>Full Name</label>
+
+                                    <span id="profileName">Loading...</span>
+
+                                </div>
+
+                            </div>
+
+                            <div class="personal-detail-row">
+
+                                <div class="detail-icon">
+
+                                    <i class="fa-regular fa-envelope"></i>
+
+                                </div>
+
+                                <div class="detail-info">
+
+                                    <label>Email Address</label>
+
+                                    <span id="profileEmail">Loading...</span>
+
+                                </div>
+
+                            </div>
+
+                            <div class="personal-detail-row">
+
+                                <div class="detail-icon">
+
+                                    <i class="fa-solid fa-phone"></i>
+
+                                </div>
+
+                                <div class="detail-info">
+
+                                    <label>Phone Number</label>
+
+                                    <span id="profilePhone">Loading...</span>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                        <!-- Edit Profile Form -->
+
+                        <form id="editProfileForm" class="edit-profile-form" hidden>
+
+                            <div class="form-group">
+
+                                <label for="editName">Full Name</label>
+
+                                <input type="text" id="editName" name="name" required>
+
+                            </div>
+
+                            <div class="form-group">
+
+                                <label for="editPhone">Phone Number</label>
+
+                                <input type="tel" id="editPhone" name="phone" maxlength="10" pattern="[0-9]{10}"
+                                    placeholder="Enter 10 digit phone number">
+
+                            </div>
+
+                            <div class="edit-form-actions">
+
+                                <button type="submit">Save Changes</button>
+
+                                <button type="button" id="cancelEditBtn">
+
+                                    Cancel
+
+                                </button>
+
+                            </div>
+
+                        </form>
+
+                    </div>
+
+                    <!-- ADDRESSES SECTION -->
+
+                    <div id="addresses-section" class="profile-section">
+
+                        <div class="addresses-header">
+
+                            <div>
+
+                                <p class="profile-subtitle">DELIVERY INFORMATION</p>
+
+                                <h2>My Addresses</h2>
+
+                            </div>
+
+                            <button type="button" id="addAddressBtn">
+
+                                + Add New Address
+
+                            </button>
+
+                        </div>
+
+                        <!-- Add / Edit Address Form -->
+
+                        <form id="addressForm" hidden>
+
+                            <div class="form-group">
+
+                                <label for="addressFullName">Full Name</label>
+
+                                <input type="text" id="addressFullName" required>
+
+                            </div>
+
+                            <div class="form-group">
+
+                                <label for="addressPhone">Phone Number</label>
+
+                                <input type="tel" id="addressPhone" maxlength="10" pattern="[0-9]{10}" required>
+
+                            </div>
+
+                            <div class="form-group">
+
+                                <label for="houseName">House Name / Number</label>
+
+                                <input type="text" id="houseName" required>
+
+                            </div>
+
+                            <div class="form-group">
+
+                                <label for="street">Street / Area</label>
+
+                                <input type="text" id="street" required>
+
+                            </div>
+
+                            <div class="form-group">
+
+                                <label for="city">City</label>
+
+                                <input type="text" id="city" required>
+
+                            </div>
+
+                            <div class="form-group">
+
+                                <label for="state">State</label>
+
+                                <input type="text" id="state" required>
+
+                            </div>
+
+                            <div class="form-group">
+
+                                <label for="pincode">Pincode</label>
+
+                                <input type="text" id="pincode" maxlength="6" pattern="[0-9]{6}" required>
+
+                            </div>
+
+                            <div class="edit-form-actions">
+                                <button type="submit">Save Address</button>
+                                <button type="button" id="cancelAddressBtn">
+                                    Cancel
+                                </button>
+                            </div>
+
+                        </form>
+
+                        <!-- Saved Addresses -->
+
+                        <div id="addressList">
+
+                            <p>Loading addresses...</p>
+
+                        </div>
+
+                    </div>
+
+                    <!-- WISHLIST SECTION -->
+
+                    <!-- WISHLIST SECTION -->
+                    <div id="wishlist-section" class="profile-section">
+
+                        <div class="wishlist-header">
+                            <div>
+                                <p class="profile-subtitle">
+                                    YOUR FAVOURITES
+                                </p>
+
+                                <h2>My Wishlist</h2>
+                            </div>
+                        </div>
+
+                        <!-- Wishlist Products -->
+                        <div id="wishlistProducts">
+                            <p>Loading wishlist...</p>
+                        </div>
+
+                    </div>
+
+                    <!-- ORDERS SECTION -->
+
+                    <div id="orders-section" class="profile-section">
+
+                        <div class="orders-header">
+                            <div>
+                                <p class="profile-subtitle">
+                                    PURCHASE HISTORY
+                                </p>
+
+                                <h2>My Orders</h2>
+                            </div>
+                        </div>
+
+                        <div id="orders-container">
+                            <p>Loading orders...</p>
+                        </div>
+
+                    </div>
+
+                </section>
+
+            </div>
+
+        </main>
+
+        <!-- Footer -->
+
+        <%- include("../partials/footer") %>
+
+            <!-- Profile JavaScript -->
+
+            <script src="/js/profile.js"></script>
+
+</body>
+
+</html>

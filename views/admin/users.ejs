@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Homiva | User Management</title>
+  <link rel="stylesheet" href="/css/admin-dashboard.css">
+  <style>
+    .users-content {
+      padding: 28px;
+    }
+
+    .users-heading {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
+      margin-bottom: 24px;
+    }
+
+    .users-heading h1 {
+      font-size: 28px;
+    }
+
+    .users-heading p {
+      color: #777;
+      margin-top: 6px;
+    }
+
+    .user-toolbar {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .user-toolbar input {
+      width: 100%;
+      max-width: 400px;
+      padding: 12px 14px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      font: inherit;
+    }
+
+    .users-table-panel {
+      background: white;
+      border-radius: 12px;
+      padding: 20px;
+      overflow: hidden;
+    }
+
+    .users-table-wrap {
+      overflow-x: auto;
+    }
+
+    .users-table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 650px;
+    }
+
+    .users-table th,
+    .users-table td {
+      padding: 15px 12px;
+      text-align: left;
+      border-bottom: 1px solid #eee;
+      font-size: 14px;
+    }
+
+    .users-table th {
+      color: #777;
+      font-weight: 600;
+    }
+
+    .user-status {
+      display: inline-block;
+      padding: 5px 10px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .active-status {
+      background: #e5f5e9;
+      color: #267341;
+    }
+
+    .blocked-status {
+      background: #fde8e7;
+      color: #b42318;
+    }
+
+    .user-actions {
+      display: flex;
+      gap: 8px;
+    }
+
+    .user-btn {
+      border: 0;
+      border-radius: 6px;
+      padding: 8px 11px;
+      cursor: pointer;
+      font-weight: 600;
+    }
+
+    .details-btn {
+      background: #f1eee6;
+      color: #34382b;
+    }
+
+    .block-btn {
+      background: #fde8e7;
+      color: #b42318;
+    }
+
+    .unblock-btn {
+      background: #e5f5e9;
+      color: #267341;
+    }
+
+    #usersMessage {
+      margin: 12px 0;
+      color: #555;
+    }
+
+    #userModal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 1000;
+      background: #0007;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .modal-content {
+      width: 100%;
+      max-width: 420px;
+      background: white;
+      padding: 25px;
+      border-radius: 12px;
+    }
+
+    .modal-content h2 {
+      margin-bottom: 18px;
+    }
+
+    .modal-content p {
+      margin: 12px 0;
+      overflow-wrap: anywhere;
+    }
+
+    .modal-close {
+      margin-top: 15px;
+      border: 0;
+      border-radius: 6px;
+      padding: 10px 16px;
+      cursor: pointer;
+      background: #eee;
+    }
+
+    @media (max-width: 600px) {
+      .users-content {
+        padding: 18px 12px;
+      }
+
+      .users-heading h1 {
+        font-size: 23px;
+      }
+
+      .users-table-panel {
+        padding: 12px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="admin-layout">
+    <aside class="sidebar">
+      <a href="/admin/dashboard" class="brand">
+        <span class="brand-icon">⌂</span>
+        <span class="brand-name">Homiva</span>
+        <small>HOME DECOR</small>
+      </a>
+
+      <nav class="sidebar-nav">
+        <a href="/admin/dashboard" class="nav-link">⌂ <span>Dashboard</span></a>
+        <a href="/admin/products" class="nav-link">◇ <span>Products</span></a>
+        <a href="/admin/orders" class="nav-link">🛒 <span>Orders</span></a>
+        <a href="/admin/users-page" class="nav-link active">♙ <span>Users</span></a>
+        <a href="/admin/coupons" class="nav-link">▦ <span>Coupons</span></a>
+
+      </nav>
+
+ <form action="/admin/logout" method="POST" class="logout-form">
+            <button type="submit" class="logout-link">
+                ↪ <span>Logout</span>
+            </button>
+        </form>    </aside>
+
+    <main class="main-content">
+      <header class="topbar">
+        <button class="menu-toggle" id="menuToggle" aria-label="Toggle menu">☰</button>
+        <div class="admin-profile">
+          <span class="avatar">A</span>
+          <span>Admin</span>
+        </div>
+      </header>
+
+      <section class="users-content">
+        <div class="users-heading">
+          <div>
+            <h1>User Management</h1>
+            <p>View, search and manage registered customers.</p>
+          </div>
+          <span id="totalUsers">Loading users...</span>
+        </div>
+
+        <div class="user-toolbar">
+          <input type="search" id="userSearch" placeholder="Search by customer name or email..."
+            aria-label="Search customers">
+        </div>
+
+        <p id="usersMessage" role="status" aria-live="polite"></p>
+
+        <section class="users-table-panel">
+          <div class="users-table-wrap">
+            <table class="users-table">
+              <thead>
+                <tr>
+                  <th>Customer</th>
+                  <th>Email</th>
+                  <th>Status</th>
+                  <th>Joined</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="usersTableBody">
+                <tr>
+                  <td colspan="5">Loading customers...</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+      </section>
+    </main>
+  </div>
+
+  <div id="userModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <div class="modal-content">
+      <h2 id="modalTitle">Customer Details</h2>
+      <div id="userDetails"></div>
+      <button class="modal-close" id="closeModal">Close</button>
+    </div>
+  </div>
+
+  <script>
+    const tableBody = document.getElementById("usersTableBody");
+    const searchInput = document.getElementById("userSearch");
+    const message = document.getElementById("usersMessage");
+    const totalUsers = document.getElementById("totalUsers");
+    const modal = document.getElementById("userModal");
+    let searchTimer;
+
+    // Create text-only elements to safely display API data.
+    function addCell(row, value) {
+      const cell = document.createElement("td");
+      cell.textContent = value ?? "";
+      row.appendChild(cell);
+      return cell;
+    }
+
+    async function loadUsers(search = "") {
+      tableBody.replaceChildren();
+      const loadingRow = document.createElement("tr");
+      const loadingCell = addCell(loadingRow, "Loading customers...");
+      loadingCell.colSpan = 5;
+      tableBody.appendChild(loadingRow);
+      message.textContent = "";
+
+      try {
+        const params = new URLSearchParams();
+        if (search.trim()) params.set("search", search.trim());
+
+        const response = await fetch(`/admin/users?${params.toString()}`);
+        const result = await response.json();
+
+        if (!response.ok || !result.success) {
+          throw new Error(result.message || "Could not load customers.");
+        }
+
+        const users = result.data || [];
+        totalUsers.textContent = `${users.length} customer${users.length === 1 ? "" : "s"}`;
+        tableBody.replaceChildren();
+
+        if (!users.length) {
+          const row = document.createElement("tr");
+          const cell = addCell(row, "No customers found.");
+          cell.colSpan = 5;
+          tableBody.appendChild(row);
+          return;
+        }
+
+        users.forEach(user => {
+          const row = document.createElement("tr");
+          addCell(row, user.name);
+          addCell(row, user.email);
+
+          const statusCell = document.createElement("td");
+          const status = document.createElement("span");
+          status.className = `user-status ${user.isBlocked ? "blocked-status" : "active-status"}`;
+          status.textContent = user.isBlocked ? "Blocked" : "Active";
+          statusCell.appendChild(status);
+          row.appendChild(statusCell);
+
+          addCell(row, user.createdAt
+            ? new Date(user.createdAt).toLocaleDateString("en-IN")
+            : "—");
+
+          const actionsCell = document.createElement("td");
+          const actions = document.createElement("div");
+          actions.className = "user-actions";
+
+          const detailsButton = document.createElement("button");
+          detailsButton.className = "user-btn details-btn";
+          detailsButton.textContent = "Details";
+          detailsButton.addEventListener("click", () => showDetails(user._id));
+
+          const statusButton = document.createElement("button");
+          statusButton.className = `user-btn ${user.isBlocked ? "unblock-btn" : "block-btn"}`;
+          statusButton.textContent = user.isBlocked ? "Unblock" : "Block";
+          statusButton.addEventListener("click", () => changeStatus(user._id, user.isBlocked));
+
+          actions.append(detailsButton, statusButton);
+          actionsCell.appendChild(actions);
+          row.appendChild(actionsCell);
+          tableBody.appendChild(row);
+        });
+      } catch (error) {
+        totalUsers.textContent = "";
+        tableBody.replaceChildren();
+        message.textContent = error.message;
+      }
+    }
+
+    async function showDetails(userId) {
+      try {
+        const response = await fetch(`/admin/users/${encodeURIComponent(userId)}`);
+        const result = await response.json();
+        if (!response.ok || !result.success) {
+          throw new Error(result.message || "Could not load customer details.");
+        }
+
+        const user = result.data;
+        const details = document.getElementById("userDetails");
+        details.replaceChildren();
+
+        [
+          ["Name", user.name],
+          ["Email", user.email],
+          ["Status", user.isBlocked ? "Blocked" : "Active"],
+          ["Joined", user.createdAt ? new Date(user.createdAt).toLocaleDateString("en-IN") : "—"]
+        ].forEach(([label, value]) => {
+          const paragraph = document.createElement("p");
+          const strong = document.createElement("strong");
+          strong.textContent = `${label}: `;
+          paragraph.append(strong, document.createTextNode(value ?? "—"));
+          details.appendChild(paragraph);
+        });
+
+        modal.style.display = "flex";
+      } catch (error) {
+        message.textContent = error.message;
+      }
+    }
+
+    async function changeStatus(userId, isBlocked) {
+      const action = isBlocked ? "unblock" : "block";
+      const confirmed = window.confirm(
+        `Are you sure you want to ${action} this customer?`
+      );
+      if (!confirmed) return;
+
+      try {
+        message.textContent = "Updating customer status...";
+        const response = await fetch(
+          `/admin/users/${encodeURIComponent(userId)}/${action}`,
+          { method: "PATCH" }
+        );
+        const result = await response.json();
+
+        if (!response.ok || !result.success) {
+          throw new Error(result.message || "Could not update customer status.");
+        }
+
+        message.textContent = result.message || "Customer status updated.";
+        await loadUsers(searchInput.value);
+      } catch (error) {
+        message.textContent = error.message;
+      }
+    }
+
+    searchInput.addEventListener("input", () => {
+      clearTimeout(searchTimer);
+      searchTimer = setTimeout(() => loadUsers(searchInput.value), 300);
+    });
+
+    document.getElementById("closeModal").addEventListener("click", () => {
+      modal.style.display = "none";
+    });
+
+    modal.addEventListener("click", event => {
+      if (event.target === modal) modal.style.display = "none";
+    });
+
+    document.getElementById("menuToggle").addEventListener("click", () => {
+      document.querySelector(".sidebar").classList.toggle("sidebar-open");
+    });
+
+    loadUsers();
+  </script>
+</body>
+
+</html>
