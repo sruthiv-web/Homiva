@@ -1,7 +1,6 @@
 require("dotenv").config();
 const express = require("express");
 const mongoose = require("mongoose");
-const dotenv = require("dotenv");
 const path = require("path");
 const authRoutes = require("./routes/authRoutes");
 const adminRoutes = require("./routes/adminRoutes");
@@ -73,10 +72,9 @@ app.get("/products", noCache, optionalAuth, async (req, res) => {
             { description: searchRegex }
         ];
     }
-
     const products = await Product.find(filter);
+    
     let wishlistIds = [];
-
     if (req.user) {
         const currentUser = await User.findById(
             req.user.id

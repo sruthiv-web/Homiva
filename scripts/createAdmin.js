@@ -8,8 +8,8 @@ dotenv.config();
 
 async function createAdmin() {
     try {
-        const email = process.env.ADMIN_EMAIL?.trim().toLowerCase();
-        const password = process.env.ADMIN_PASSWORD;
+       const email = process.env.ADMIN_EMAIL?.trim().toLowerCase();
+      const password = process.env.ADMIN_PASSWORD;
 
         if (!email || !password) {
             throw new Error("ADMIN_EMAIL and ADMIN_PASSWORD must be set in .env");

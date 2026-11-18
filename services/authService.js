@@ -37,7 +37,6 @@ async function loginUser({ email, password }) {
     const user = await User.findOne({
         email: normalizedEmail
     });
-
     if (!user) {
         const error = new Error("Invalid email or password");
         error.statusCode = 401;

@@ -205,11 +205,7 @@ function logout(req, res) {
         secure: process.env.NODE_ENV === "production"
     });
 
-    return res.status(200).json({
-        success: true,
-        message: "Admin logout successful.",
-        redirectUrl: "/admin/login"
-    });
+   return res.redirect("/admin/login");
 }
 // Get dashboard analytics
 
