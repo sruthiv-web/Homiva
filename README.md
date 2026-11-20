@@ -121,7 +121,7 @@ Git & GitHub
 
 
 ## Project Structure
-
+```text
 homiva/
 │
 ├── config/
@@ -140,6 +140,7 @@ homiva/
 ├── app.js
 ├── package.json
 └── README.md
+```
 
 ## Author
 
