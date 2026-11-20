@@ -119,8 +119,8 @@ Git & GitHub
 
  -   Make sure the required admin credentials are configured in the .env file.
 
-
 ## Project Structure
+
 ```text
 homiva/
 │
@@ -141,6 +141,7 @@ homiva/
 ├── package.json
 └── README.md
 ```
+
 
 ## Author
 
