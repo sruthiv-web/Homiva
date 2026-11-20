@@ -174,8 +174,12 @@ const PORT = process.env.PORT || 3000;
 
 async function startServer() {
     try {
-        await mongoose.connect(process.env.MONGODB_URI);
+ const mongoURI =
+            process.env.NODE_ENV === "production"
+                ? process.env.MONGODB_URI
+                : process.env.LOCAL_MONGODB_URI;
 
+        await mongoose.connect(mongoURI);
         console.log("MongoDB connected successfully");
 
         app.listen(PORT, () => {
