@@ -73,7 +73,7 @@ Git & GitHub
 
 ### 4. Configure Environment Variables
 
-     Create a .env file in the root directory and add the required environment variables.
+Create a .env file in the root directory and add the required environment variables.
 
      PORT=
      LOCAL_MONGODB_URI=
@@ -92,9 +92,9 @@ Git & GitHub
      RAZORPAY_KEY_ID=
      RAZORPAY_KEY_SECRET=
      
-     The admin password must contain at least 12 characters.
+ The admin password must contain at least 12 characters.
 
-     Add any additional variables required by the project, including payment gateway credentials
+ Add any additional variables required by the project, including payment gateway credentials
 
  ### 5. Start the Development Server
 
