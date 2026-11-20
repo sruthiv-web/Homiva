@@ -111,13 +111,15 @@ Git & GitHub
 
 ### 2. Create Admin User
 
-- Run the following command to create a new admin user:
+Run the following command to create a new admin user:
 
-     node scripts/createAdmin.js
+```bash
+node scripts/createAdmin.js
+```
 
- -   This script creates a new admin user in the MongoDB database.
+This script creates a new admin user in the MongoDB database.
 
- -   Make sure the required admin credentials are configured in the .env file.
+Make sure the required admin credentials are configured in the `.env` file.
 
 ## Project Structure
 
