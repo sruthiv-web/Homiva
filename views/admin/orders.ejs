@@ -22,7 +22,7 @@
                 <small>HOME DECOR</small>
             </a>
 
-             <nav class="sidebar-nav">
+            <nav class="sidebar-nav">
                 <a href="/admin/dashboard" class="nav-link">⌂ <span>Dashboard</span></a>
                 <a href="/admin/products" class="nav-link">◇ <span>Products</span></a>
                 <a href="/admin/orders" class="nav-link active">🛒 <span>Orders</span></a>
@@ -38,10 +38,7 @@
         <main class="main-content">
             <header class="topbar">
                 <button class="menu-toggle" id="menuToggle" aria-label="Toggle menu">☰</button>
-                <div class="search-box">
-                    <span>⌕</span>
-                    <input type="search" placeholder="Search orders..." id="orderSearch">
-                </div>
+                
                 <div class="admin-profile">
                     <span class="avatar">A</span>
                     <span>Admin</span>
@@ -144,16 +141,16 @@
             const statusSelect = document.createElement("select");
             statusSelect.id = "orderStatusSelect";
 
-           const allowedTransitions = {
-    Pending: ["Confirmed", "Cancelled"],
-    Confirmed: ["Shipped", "Cancelled"],
-    Shipped: ["Out for Delivery"],
-    "Out for Delivery": ["Delivered"],
-    Delivered: ["Returned"],
-    Returned: ["Refunded"],
-    Refunded: [],
-    Cancelled: []
-};
+            const allowedTransitions = {
+                Pending: ["Confirmed", "Cancelled"],
+                Confirmed: ["Shipped", "Cancelled"],
+                Shipped: ["Out for Delivery"],
+                "Out for Delivery": ["Delivered"],
+                Delivered: ["Returned"],
+                Returned: ["Refunded"],
+                Refunded: [],
+                Cancelled: []
+            };
 
             const statuses = allowedTransitions[order.orderStatus] || [];
 
@@ -366,7 +363,7 @@
                     payment.textContent = order.paymentMethod;
 
                     const status = document.createElement("td");
-                    status.textContent = order.orderStatus;
+                    status.innerHTML = `<span class="status ${order.orderStatus.toLowerCase().replaceAll(" ", "-")}">${order.orderStatus}</span>`;
                     const actions = document.createElement("td");
 
                     const viewButton = document.createElement("button");

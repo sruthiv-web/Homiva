@@ -300,6 +300,41 @@ td {
   font-size: 11px;
 }
 
+/* Order Status Colors */
+
+
+.status.pending {
+    background: #FFF1D6;
+    color: #A66B0B;
+}
+
+.status.confirmed {
+    background: #E5EDFF;
+    color: #3563B8;
+}
+
+.status.shipped {
+    background: #E5EDFF;
+    color: #3563B8;
+}
+
+.status.out-for-delivery {
+    background: #FCEBD9;
+    color: #B76B20;
+}
+
+.status.cancelled {
+    background: #FCE7E7;
+    color: #C23B3B;
+}
+
+
+.status.refunded {
+    background: #E5F3F3;
+    color: #287B7B;
+}
+
+
 .delivered {
   background: #e6f3e5;
   color: #286a39;
@@ -1016,5 +1051,115 @@ td {
 @media (max-width: 768px) {
     .stats-grid {
         grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+
+/* =================================
+   HOMIVA - PROFESSIONAL ORDERS UI
+================================= */
+
+.orders-panel {
+    background: #fffefa;
+    border: 1px solid #eeece4;
+    border-radius: 14px;
+    padding: 24px;
+    box-shadow: 0 4px 18px rgba(52, 59, 37, 0.04);
+}
+
+.orders-panel .panel-heading {
+    margin-bottom: 22px;
+}
+
+.orders-panel .panel-heading h2 {
+    font-size: 21px;
+    font-weight: 600;
+}
+
+.orders-panel .panel-heading span {
+    color: #68734f;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.orders-panel .table-wrapper {
+    border: 1px solid #eeece4;
+    border-radius: 10px;
+    overflow-x: auto;
+}
+
+.orders-panel table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    font-size: 13px;
+}
+
+.orders-panel th {
+    background: #f5f4ed;
+    color: #454a38;
+    font-weight: 600;
+    padding: 17px 14px;
+    border-bottom: 1px solid #e9e7dd;
+}
+
+.orders-panel td {
+    padding: 17px 14px;
+    color: #44463e;
+    border-bottom: 1px solid #f0eee8;
+    vertical-align: middle;
+}
+
+.orders-panel tbody tr {
+    transition: background 0.2s ease;
+}
+
+.orders-panel tbody tr:hover {
+    background: #faf9f4;
+}
+
+.orders-panel tbody tr:last-child td {
+    border-bottom: none;
+}
+
+/* Status Badges */
+
+.orders-panel .status {
+    padding: 7px 12px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+/* View Details Button */
+
+#orders-container .view-order-btn {
+    background: #68734f;
+    color: #fff;
+    border: 1px solid #68734f;
+    padding: 10px 17px;
+    border-radius: 7px;
+    font-size: 12px;
+    font-weight: 600;
+    transition: all 0.2s ease;
+}
+
+#orders-container .view-order-btn:hover {
+    background: #4c5632;
+    border-color: #4c5632;
+    transform: translateY(-1px);
+}
+
+/* Responsive */
+
+@media (max-width: 768px) {
+    .orders-panel {
+        padding: 14px;
+    }
+
+    .orders-panel th,
+    .orders-panel td {
+        padding: 12px 10px;
     }
 }

@@ -302,24 +302,76 @@
         } = result.data;
 
         // 1. Revenue Timeline Chart
+
+        const revenueMap = new Map(
+          revenueTimeline.map(item => [item._id, item.revenue])
+        );
+
+        const dailyRevenue = [];
+
+        if (revenueTimeline.length > 0) {
+          const dates = revenueTimeline.map(item => item._id).sort();
+
+          const startDate = new Date(dates[0] + "T00:00:00Z");
+          const endDate = new Date(dates[dates.length - 1] + "T00:00:00Z");
+
+          for (let date = new Date(startDate); date <= endDate; date.setUTCDate(date.getUTCDate() + 1)) {
+            const dateKey = date.toISOString().slice(0, 10);
+
+            dailyRevenue.push({
+              date: dateKey,
+              revenue: revenueMap.get(dateKey) || 0
+            });
+          }
+        }
+
+
+
         new Chart(document.getElementById("revenueChart"), {
           type: "line",
           data: {
-            labels: revenueTimeline.map(item => item._id),
+            labels: dailyRevenue.map(item => {
+              const date = new Date(item.date + "T00:00:00Z");
+
+              return date.toLocaleDateString("en-IN", {
+                day: "2-digit",
+                month: "short",
+                timeZone: "UTC"
+              });
+            }),
             datasets: [{
               label: "Revenue (₹)",
-              data: revenueTimeline.map(item => item.revenue),
+              data: dailyRevenue.map(item => item.revenue),
               borderColor: "#8b7355",
               backgroundColor: "rgba(139, 115, 85, 0.15)",
               fill: true,
-              tension: 0.4
+              tension: 0.4,
+              pointRadius: 4,
+              pointHoverRadius: 6,
+              pointHitRadius: 8
             }]
           },
           options: {
             responsive: true,
-            maintainAspectRatio: false
+            maintainAspectRatio: false,
+            scales: {
+              x: {
+                ticks: {
+                  autoSkip: false,
+                  maxTicksLimit: 7,
+                  maxRotation: 0,
+                  minRotation: 0
+                }
+              }
+            },
+            interaction: {
+              mode: "nearest",
+              intersect: true
+            }
           }
         });
+
+
 
         // 2. Sales by Category Chart
         new Chart(document.getElementById("categoryChart"), {
