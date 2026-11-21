@@ -572,12 +572,12 @@ body {
     transform: translateY(-50%);
     pointer-events: none;
 }
-
 .range-slider::before {
     left: 0;
     right: 0;
-    background: #fffdf9 !important;
-    border: 1px solid #e8dfd3;
+    background: #FFFFFF;
+    border: 1px solid #E8DFD3;
+    z-index: 1;
 }
 
 
@@ -585,6 +585,7 @@ body {
     left: var(--range-start, 0%);
     width: var(--range-width, 100%);
     background: var(--olive);
+    z-index: 2;
 }
 
 .price-filter .range-slider input[type="range"] {
@@ -600,6 +601,7 @@ body {
     appearance: none;
     -webkit-appearance: none;
     outline: none;
+      z-index: 3;
 }
 
 .price-filter .range-slider input[type="range"]::-webkit-slider-runnable-track {
