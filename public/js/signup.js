@@ -35,10 +35,13 @@ signupForm.addEventListener("submit", async (event) => {
     });
 
     const data = await response.json();
-    signupMessage.textContent = data.message;
 
-    if (data.success) {
-      signupForm.reset();
+   if (data.success) {
+      signupMessage.textContent = "Account created successfully! Redirecting...";
+
+      window.location.href = data.redirectUrl || "/";
+    } else {
+      signupMessage.textContent = data.message;
     }
   } catch (error) {
     console.error("Signup request failed:", error);
