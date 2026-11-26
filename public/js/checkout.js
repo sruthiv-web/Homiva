@@ -3,16 +3,16 @@ const isBuyNow = checkoutParams.get("mode") === "buyNow";
 
 let buyNowData = null;
 document.addEventListener("DOMContentLoaded", () => {
-    
-loadAddresses();
 
-loadAvailableCoupons().then(() => {
-    if (isBuyNow) {
-        loadBuyNowProduct();
-    } else {
-        loadCheckoutCart();
-    }
-});
+    loadAddresses();
+
+    loadAvailableCoupons().then(() => {
+        if (isBuyNow) {
+            loadBuyNowProduct();
+        } else {
+            loadCheckoutCart();
+        }
+    });
     if (isBuyNow) {
         loadBuyNowProduct();
     } else {
@@ -537,8 +537,8 @@ placeOrderButton.addEventListener("click", async () => {
             sessionStorage.removeItem("buyNowProduct");
         }
 
-        alert("Order placed successfully!"); window.location.href = `/order-success/${result.orderId}`;
-
+        alert("Order placed successfully!");
+        window.location.href = `/order-success/${result.orderId}`;
     } catch (error) {
         console.error("Place order error:", error);
         alert("Something went wrong. Please try again.");

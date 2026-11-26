@@ -16,6 +16,8 @@ const requireAuth = require("./middleware/authMiddleware");
 const optionalAuth = require("./middleware/optionalAuth");
 const profileRoutes = require("./routes/profileRoutes");
 const orderRoutes = require("./routes/orderRoutes");
+const Order = require("./models/Order");
+
 
 const app = express();
 
@@ -54,47 +56,48 @@ app.get("/", noCache, optionalAuth, (req, res) => {
 });
 
 app.get("/products", noCache, optionalAuth, async (req, res) => {
-    try{ const search = req.query.search?.trim();
+    try {
+        const search = req.query.search?.trim();
 
-    const filter = {
-        isActive: true
-    };
+        const filter = {
+            isActive: true
+        };
 
-    if (search) {
-        const searchRegex = new RegExp(
-    search.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"),
-    "i"
-);
+        if (search) {
+            const searchRegex = new RegExp(
+                search.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"),
+                "i"
+            );
 
-        filter.$or = [
-            { name: searchRegex },
-            { category: searchRegex },
-            { description: searchRegex }
-        ];
+            filter.$or = [
+                { name: searchRegex },
+                { category: searchRegex },
+                { description: searchRegex }
+            ];
+        }
+        const products = await Product.find(filter);
+
+        let wishlistIds = [];
+        if (req.user) {
+            const currentUser = await User.findById(
+                req.user.id
+            ).select("wishlist");
+
+            wishlistIds = currentUser
+                ? currentUser.wishlist.map(id => id.toString())
+                : [];
+        }
+
+        res.render("customer/products", {
+            products,
+            user: req.user || null,
+            wishlistIds
+        });
+
+    } catch (error) {
+        console.error("Product listing error:", error);
+        res.status(500).send("Unable to load products.");
     }
-    const products = await Product.find(filter);
-    
-    let wishlistIds = [];
-    if (req.user) {
-        const currentUser = await User.findById(
-            req.user.id
-        ).select("wishlist");
-
-        wishlistIds = currentUser
-            ? currentUser.wishlist.map(id => id.toString())
-            : [];
-    }
-
-    res.render("customer/products", {
-        products,
-        user: req.user || null,
-        wishlistIds
-    });
-
-} catch (error) {
-    console.error("Product listing error:", error);
-    res.status(500).send("Unable to load products.");
-}
 });
 
 // Product Detail Page
@@ -157,12 +160,25 @@ app.get("/checkout", noCache, requireAuth,
 );
 // Order Success Page
 app.get("/order-success/:orderId", noCache, requireAuth,
-    checkUserNotBlocked, (req, res) => {
+    checkUserNotBlocked, async (req, res) => {
 
-        res.render("customer/order-success", {
-            user: req.user,
-            orderId: req.params.orderId
-        });
+        try {
+            const order = await Order.findById(req.params.orderId);
+
+            if (!order) {
+                return res.status(404).send("Order not found");
+            }
+
+            res.render("customer/order-success", {
+                user: req.user,
+                orderId: order._id,
+                order
+            });
+
+        } catch (error) {
+            console.error("Order success page error:", error);
+            res.status(500).send("Something went wrong");
+        }
     }
 );
 app.get("/suspended", (req, res) => {
@@ -174,7 +190,7 @@ const PORT = process.env.PORT || 3000;
 
 async function startServer() {
     try {
- const mongoURI =
+        const mongoURI =
             process.env.NODE_ENV === "production"
                 ? process.env.MONGODB_URI
                 : process.env.LOCAL_MONGODB_URI;
